@@ -9,7 +9,8 @@ Authorization: Bearer {{authorization}}
   "role": ["ADMIN", "REGISTRY"],
   "skip": 0,
   "take": 10,
-  "keyword": "j"
+  "keyword": "j",
+  "departmentId": "01b30971-f728-4fe5-ab7f-82a7f51a8e9f"
 }
 
 ### /get

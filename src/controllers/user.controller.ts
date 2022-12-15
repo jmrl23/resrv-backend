@@ -35,10 +35,14 @@ controller
     body(UserList),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const { role, take, skip, keyword, isDisabled } = request.body
+        const { role, take, skip, keyword, isDisabled, departmentId } =
+          request.body
         const users = await db.user.findMany({
           where: {
             isDisabled,
+            StudentInformation: {
+              departmentId
+            },
             AND: [
               { UserLevel: { role: { in: role } } },
               {
@@ -47,17 +51,7 @@ controller
                   { email: { contains: keyword ?? '' } },
                   {
                     StudentInformation: {
-                      OR: [
-                        { studentId: { contains: keyword ?? '' } },
-                        {
-                          Department: {
-                            OR: [
-                              { name: { contains: keyword ?? '' } },
-                              { alias: { contains: keyword ?? '' } }
-                            ]
-                          }
-                        }
-                      ]
+                      studentId: { contains: keyword ?? '' }
                     }
                   }
                 ]

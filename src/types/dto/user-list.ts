@@ -5,6 +5,7 @@ import {
   IsInt,
   IsOptional,
   IsString,
+  IsUUID,
   MinLength
 } from 'class-validator'
 
@@ -28,4 +29,8 @@ export class UserList {
   @IsString()
   @MinLength(1)
   readonly keyword: string
+
+  @IsOptional()
+  @IsUUID()
+  readonly departmentId: string
 }
