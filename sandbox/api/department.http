@@ -1,0 +1,63 @@
+@authorization = keyboard_cat
+
+### /list
+POST http://localhost:3001/department/list HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "skip": 0,
+  "take": 10,
+  "keyword": "b"
+}
+
+### /create
+POST http://localhost:3001/department/create HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "name": "Bachelor of Science in Information Technology",
+  "alias": "BSIT",
+  "color": "slate-900"
+}
+
+### /get
+POST http://localhost:3001/department/get HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "id": "66f216c1-d84e-4010-8ba5-bf7158ed7219"
+}
+
+### /update
+POST http://localhost:3001/department/update HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "id": "66f216c1-d84e-4010-8ba5-bf7158ed7219",
+  "name": "Bachelor of Science in Information Technology",
+  "alias": "BSIT",
+  "color": "blue-500"
+}
+
+### /toggle
+POST http://localhost:3001/department/toggle HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "id": "66f216c1-d84e-4010-8ba5-bf7158ed7219",
+  "state": true
+}
+
+### /delete
+POST http://localhost:3001/department/delete HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "id": "66f216c1-d84e-4010-8ba5-bf7158ed7219"
+}

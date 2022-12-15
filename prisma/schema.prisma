@@ -1,0 +1,197 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator erd {
+  provider                      = "prisma-erd-generator"
+  output                        = "../sandbox/DATABASE_ERD.svg"
+  theme                         = "neutral"
+  includeRelationshipFromFields = true
+  ERD_DEBUG                     = true
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+// ============================= ENUMS ==============================
+
+enum Role {
+  ADMIN
+  REGISTRY
+  STUDENT
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  NON_BINARY
+}
+
+enum Term {
+  FIRST
+  SECOND
+}
+
+enum Day {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+}
+
+enum ReservationStatus {
+  PENDING
+  APPROVED
+  DECLINE
+}
+
+// ============================= MODELS =============================
+
+// == MODEL: User
+
+model User {
+  id                 String              @unique @default(uuid())
+  dateCreated        DateTime            @default(now())
+  lastUpdated        DateTime            @updatedAt
+  isDisabled         Boolean             @default(false)
+  email              String              @unique
+  givenName          String?
+  familyName         String?
+  displayName        String?
+  picture            String?
+  StudentInformation StudentInformation?
+  UserLevel          UserLevel?          @relation(fields: [userLevelId], references: [id])
+  userLevelId        String?             @unique
+  Reservation        Reservation[]
+
+  @@unique([id, email])
+}
+
+// == MODEL: StudentInformation
+
+model StudentInformation {
+  id            String          @unique @default(uuid())
+  dateCreated   DateTime        @default(now())
+  lastUpdated   DateTime        @updatedAt
+  gender        Gender
+  address       String
+  contactNumber String?
+  studentId     String?         @unique // registry ang maglalagay
+  ClassSchedule ClassSchedule[]
+  User          User            @relation(fields: [userId], references: [id])
+  userId        String
+  Department    Department      @relation(fields: [departmentId], references: [id])
+  departmentId  String
+
+  @@unique([userId])
+  @@index([departmentId])
+}
+
+// == MODEL: UserLevel
+
+model UserLevel {
+  id          String   @unique @default(uuid())
+  dateCreated DateTime @default(now())
+  lastUpdated DateTime @updatedAt
+  email       String
+  role        Role     @default(STUDENT)
+  User        User?
+
+  @@unique([email])
+}
+
+// == MODEL: Department
+
+model Department {
+  id                 String               @unique @default(uuid())
+  dateCreated        DateTime             @default(now())
+  lastUpdated        DateTime             @updatedAt
+  isDisabled         Boolean              @default(false)
+  name               String
+  alias              String
+  color              String
+  ClassSection       ClassSection[]
+  StudentInformation StudentInformation[]
+
+  @@unique([name, alias])
+}
+
+// == MODEL: Course
+
+model Course {
+  id                 String          @unique @default(uuid())
+  dateCreated        DateTime        @default(now())
+  lastUpdated        DateTime        @updatedAt
+  isDisabled         Boolean         @default(false)
+  name               String
+  alias              String
+  ClassSchedule      ClassSchedule[] @relation("ScheduleCourse")
+  CoursePrerequisite ClassSchedule[] @relation("Prerequisite")
+
+  @@unique([name, alias])
+}
+
+// == MODEL: ClassSection
+
+model ClassSection {
+  id            String          @unique @default(uuid())
+  dateCreated   DateTime        @default(now())
+  lastUpdated   DateTime        @updatedAt
+  name          String
+  Department    Department      @relation(fields: [departmentId], references: [id])
+  departmentId  String
+  ClassSchedule ClassSchedule[]
+
+  @@index([departmentId])
+}
+
+// == MODEL: ClassSchedule
+
+model ClassSchedule {
+  id                   String              @unique @default(uuid())
+  dateCreated          DateTime            @default(now())
+  lastUpdated          DateTime            @updatedAt
+  term                 Term
+  day                  Day
+  timeStart            DateTime
+  timeEnd              DateTime
+  unit                 Int
+  labUnit              Int                 @default(0)
+  ClassSection         ClassSection        @relation(fields: [classSectionId], references: [id])
+  classSectionId       String
+  Course               Course              @relation("ScheduleCourse", fields: [courseId], references: [id])
+  courseId             String
+  Prerequisite         Course              @relation("Prerequisite", fields: [prerequisiteId], references: [id])
+  prerequisiteId       String
+  StudentInformation   StudentInformation? @relation(fields: [studentInformationId], references: [id])
+  studentInformationId String?
+  Reservation          Reservation?        @relation(fields: [reservationId], references: [id])
+  reservationId        String?
+
+  @@index([classSectionId])
+  @@index([courseId])
+  @@index([prerequisiteId])
+  @@index([studentInformationId])
+  @@index([reservationId])
+}
+
+// == MODEL: Reservation
+model Reservation {
+  id             String            @unique @default(uuid())
+  dateCreated    DateTime          @default(now())
+  lastUpdated    DateTime          @updatedAt
+  status         ReservationStatus @default(PENDING)
+  user           User              @relation(fields: [userId], references: [id])
+  userId         String
+  classSchedules ClassSchedule[]
+
+  @@index([userId])
+}
