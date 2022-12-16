@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from 'express'
 import { User } from './../types/user'
 import { Role } from '@prisma/client'
 import { Router } from 'express'
-import { authorization, body } from '../middlewares'
+import { authorization, blockDisabled, body } from '../middlewares'
 import {
   UserGet,
   UserList,
@@ -32,6 +32,7 @@ controller
   .post(
     '/list',
     authorization(Role.ADMIN, Role.REGISTRY),
+    blockDisabled,
     body(UserList),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
@@ -77,6 +78,7 @@ controller
   .post(
     '/get',
     authorization(Role.ADMIN, Role.REGISTRY, Role.STUDENT),
+    blockDisabled,
     body(UserGet),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
@@ -106,6 +108,7 @@ controller
   .post(
     '/toggle',
     authorization(Role.ADMIN, Role.REGISTRY),
+    blockDisabled,
     body(UserToggle),
     async function (request: Request, response: Response, next: NextFunction) {
       const { id, state } = request.body
@@ -126,12 +129,13 @@ controller
   .post(
     '/set-role',
     authorization(Role.ADMIN),
+    blockDisabled,
     body(UserSetRole),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const { email, role } = request.body
         if (email === (request.user as User)?.email)
-          return next(new BadRequestError('Cannot set own role'))
+          return next(new BadRequestError('Cannot modify own data'))
         const userLevel = await db.userLevel.upsert({
           where: { email },
           update: { role },
@@ -154,10 +158,13 @@ controller
   .post(
     '/remove-role',
     authorization(Role.ADMIN),
+    blockDisabled,
     body(UserRemoveRole),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const { email } = request.body
+        if (email === (request.user as User)?.email)
+          return next(new BadRequestError('Cannot modify own data'))
         const result = await db.userLevel.delete({
           where: { email },
           include: { User: true }

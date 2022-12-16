@@ -2,7 +2,7 @@ import type { NextFunction, Response, Request } from 'express'
 import { Role } from '@prisma/client'
 import { Router } from 'express'
 import { BadRequestError, InternalServerError } from 'express-response-errors'
-import { authorization, body } from '../middlewares'
+import { authorization, blockDisabled, body } from '../middlewares'
 import { db } from '../services'
 import {
   DepartmentCreate,
@@ -19,8 +19,9 @@ controller
 
   .post(
     '/list',
-    body(DepartmentList),
     authorization(Role.ADMIN, Role.REGISTRY, Role.STUDENT),
+    blockDisabled,
+    body(DepartmentList),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const { take, skip, keyword, isDisabled } = request.body
@@ -48,6 +49,7 @@ controller
   .post(
     '/create',
     authorization(Role.ADMIN, Role.REGISTRY),
+    blockDisabled,
     body(DepartmentCreate),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
@@ -64,6 +66,7 @@ controller
   .post(
     '/get',
     authorization(Role.ADMIN, Role.REGISTRY, Role.STUDENT),
+    blockDisabled,
     body(DepartmentGet),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
@@ -83,6 +86,7 @@ controller
   .post(
     '/update',
     authorization(Role.ADMIN, Role.REGISTRY),
+    blockDisabled,
     body(DepartmentUpdate),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
@@ -103,6 +107,7 @@ controller
   .post(
     '/toggle',
     authorization(Role.ADMIN, Role.REGISTRY),
+    blockDisabled,
     body(DepartmentToggle),
     async function (request: Request, response: Response, next: NextFunction) {
       const { id, state } = request.body
@@ -123,6 +128,7 @@ controller
   .post(
     '/delete',
     authorization(Role.ADMIN, Role.REGISTRY),
+    blockDisabled,
     body(DepartmentDelete),
     async function (request: Request, response: Response, next: NextFunction) {
       try {

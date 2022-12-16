@@ -23,7 +23,6 @@ export function authorization(...role: Role[]) {
       const user = (await cache.get(`user-${id}`)) as null | User
       if (!user ?? !user?.UserLevel ?? !role.includes(user.UserLevel.role))
         return next(new UnauthorizedError(UNAUTHORIZED_MESSAGE))
-      if (user.isDisabled) return next(new UnauthorizedError('Account is disabled'))
       next()
     } catch (_error) {
       next(new UnauthorizedError(UNAUTHORIZED_MESSAGE))
