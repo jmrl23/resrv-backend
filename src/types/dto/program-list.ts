@@ -6,7 +6,7 @@ import {
   MinLength
 } from 'class-validator'
 
-export class DepartmentList {
+export class ProgramList {
   @IsOptional()
   @IsBoolean()
   readonly isDisabled: boolean

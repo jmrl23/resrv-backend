@@ -36,13 +36,13 @@ controller
     body(UserList),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const { role, take, skip, keyword, isDisabled, departmentId } =
+        const { role, take, skip, keyword, isDisabled, programId } =
           request.body
         const users = await db.user.findMany({
           where: {
             isDisabled,
             StudentInformation: {
-              departmentId
+              programId
             },
             AND: [
               { UserLevel: { role: { in: role } } },

@@ -1,6 +1,6 @@
 import { IsString, IsUUID, Length } from 'class-validator'
 
-export class DepartmentUpdate {
+export class ProgramUpdate {
   @IsUUID()
   readonly id: string
 

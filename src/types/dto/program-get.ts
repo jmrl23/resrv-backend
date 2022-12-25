@@ -1,6 +1,6 @@
 import { IsUUID } from 'class-validator'
 
-export class DepartmentDelete {
+export class ProgramGet {
   @IsUUID()
   readonly id: string
 }

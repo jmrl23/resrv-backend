@@ -5,12 +5,12 @@ import { BadRequestError, InternalServerError } from 'express-response-errors'
 import { authorization, blockDisabled, body } from '../middlewares'
 import { db } from '../services'
 import {
-  DepartmentCreate,
-  DepartmentDelete,
-  DepartmentGet,
-  DepartmentList,
-  DepartmentToggle,
-  DepartmentUpdate
+  ProgramCreate,
+  ProgramDelete,
+  ProgramGet,
+  ProgramList,
+  ProgramToggle,
+  ProgramUpdate
 } from '../types/dto'
 
 const controller = Router()
@@ -21,11 +21,11 @@ controller
     '/list',
     authorization(Role.ADMIN, Role.REGISTRY, Role.STUDENT),
     blockDisabled,
-    body(DepartmentList),
+    body(ProgramList),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const { take, skip, keyword, isDisabled } = request.body
-        const departments = await db.department.findMany({
+        const Programs = await db.program.findMany({
           where: {
             isDisabled,
             OR: [
@@ -37,7 +37,7 @@ controller
           take,
           orderBy: { lastUpdated: 'desc' }
         })
-        response.json(departments)
+        response.json(Programs)
       } catch (error) {
         if (error instanceof Error)
           return next(new InternalServerError(error.message))
@@ -50,10 +50,10 @@ controller
     '/create',
     authorization(Role.ADMIN, Role.REGISTRY),
     blockDisabled,
-    body(DepartmentCreate),
+    body(ProgramCreate),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const data = await db.department.create({ data: request.body })
+        const data = await db.program.create({ data: request.body })
         response.json(data)
       } catch (error) {
         if (error instanceof Error)
@@ -67,14 +67,14 @@ controller
     '/get',
     authorization(Role.ADMIN, Role.REGISTRY, Role.STUDENT),
     blockDisabled,
-    body(DepartmentGet),
+    body(ProgramGet),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const { id } = request.body
-        const departments = await db.department.findUnique({
+        const Programs = await db.program.findUnique({
           where: { id }
         })
-        response.json(departments)
+        response.json(Programs)
       } catch (error) {
         if (error instanceof Error)
           return next(new InternalServerError(error.message))
@@ -87,11 +87,11 @@ controller
     '/update',
     authorization(Role.ADMIN, Role.REGISTRY),
     blockDisabled,
-    body(DepartmentUpdate),
+    body(ProgramUpdate),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const { id, name, alias, color } = request.body
-        const data = await db.department.update({
+        const data = await db.program.update({
           where: { id },
           data: { name, alias, color }
         })
@@ -108,11 +108,11 @@ controller
     '/toggle',
     authorization(Role.ADMIN, Role.REGISTRY),
     blockDisabled,
-    body(DepartmentToggle),
+    body(ProgramToggle),
     async function (request: Request, response: Response, next: NextFunction) {
       const { id, state } = request.body
       try {
-        const data = await db.department.update({
+        const data = await db.program.update({
           where: { id },
           data: { isDisabled: state }
         })
@@ -129,11 +129,11 @@ controller
     '/delete',
     authorization(Role.ADMIN, Role.REGISTRY),
     blockDisabled,
-    body(DepartmentDelete),
+    body(ProgramDelete),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const { id } = request.body
-        const data = await db.department.delete({
+        const data = await db.program.delete({
           where: { id }
         })
         response.json(data)

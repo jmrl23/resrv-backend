@@ -88,11 +88,11 @@ model StudentInformation {
   ClassSchedule ClassSchedule[]
   User          User            @relation(fields: [userId], references: [id])
   userId        String
-  Department    Department      @relation(fields: [departmentId], references: [id])
-  departmentId  String
+  Program       Program         @relation(fields: [programId], references: [id])
+  programId     String
 
   @@unique([userId])
-  @@index([departmentId])
+  @@index([programId])
 }
 
 // == MODEL: UserLevel
@@ -110,7 +110,7 @@ model UserLevel {
 
 // == MODEL: Department
 
-model Department {
+model Program {
   id                 String               @unique @default(uuid())
   dateCreated        DateTime             @default(now())
   lastUpdated        DateTime             @updatedAt
@@ -146,11 +146,11 @@ model ClassSection {
   dateCreated   DateTime        @default(now())
   lastUpdated   DateTime        @updatedAt
   name          String
-  Department    Department      @relation(fields: [departmentId], references: [id])
-  departmentId  String
+  Program       Program         @relation(fields: [programId], references: [id])
+  programId     String
   ClassSchedule ClassSchedule[]
 
-  @@index([departmentId])
+  @@index([programId])
 }
 
 // == MODEL: ClassSchedule

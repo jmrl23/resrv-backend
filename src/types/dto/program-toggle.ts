@@ -1,6 +1,6 @@
 import { IsBoolean, IsUUID } from 'class-validator'
 
-export class DepartmentToggle {
+export class ProgramToggle {
   @IsUUID()
   readonly id: string
 

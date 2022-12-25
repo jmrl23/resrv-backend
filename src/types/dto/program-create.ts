@@ -1,6 +1,6 @@
 import { IsString, Length } from 'class-validator'
 
-export class DepartmentCreate {
+export class ProgramCreate {
   @IsString()
   @Length(6, 100)
   readonly name: string
