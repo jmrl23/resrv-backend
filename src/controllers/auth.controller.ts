@@ -10,7 +10,9 @@ import {
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
   ORGANIZATION_EMAIL_DOMAIN,
-  PASSPORT_GOOGLE_CALLBACK_URL
+  PASSPORT_GOOGLE_CALLBACK_URL,
+  USE_ORGANIZATION_EMAIL_ON_DEVELOPMENT,
+  NODE_ENV
 } from '../configurations'
 import passport from 'passport'
 
@@ -22,9 +24,15 @@ passport.use(
       callbackURL: PASSPORT_GOOGLE_CALLBACK_URL,
       scope: ['profile', 'email']
     },
-    async (accessToken, refreshToken, profile, next) => {
+    async (_accessToken, _refreshToken, profile, next) => {
       const data: typeof profile._json = profile._json
-      if (!data.email?.endsWith(`@${ORGANIZATION_EMAIL_DOMAIN}`))
+      if (
+        (NODE_ENV !== 'development' &&
+          !data.email?.endsWith(`@${ORGANIZATION_EMAIL_DOMAIN}`)) ||
+        (NODE_ENV === 'development' &&
+          USE_ORGANIZATION_EMAIL_ON_DEVELOPMENT &&
+          !data.email?.endsWith(`@${ORGANIZATION_EMAIL_DOMAIN}`))
+      )
         return next(null, undefined)
       try {
         const user = await db.user.findUnique({
@@ -36,7 +44,7 @@ passport.use(
             where: { id: user.id },
             data: {
               userLevelId: await db.userLevel
-                .create({ data: { email: data.email } })
+                .create({ data: { email: data.email as string } })
                 .then(({ id }) => id)
             }
           })
@@ -47,7 +55,7 @@ passport.use(
         })
         const newUser = await db.user.create({
           data: {
-            email: data.email,
+            email: data.email as string,
             givenName: data.given_name,
             familyName: data.family_name,
             displayName: data.name,
@@ -56,7 +64,7 @@ passport.use(
               ? userLevel.id
               : await db.userLevel
                   // eslint-disable-next-line indent
-                  .create({ data: { email: data.email } })
+                  .create({ data: { email: data.email as string } })
                   // eslint-disable-next-line indent
                   .then(({ id }) => id)
           }

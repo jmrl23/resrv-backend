@@ -1,0 +1,4 @@
+{
+  // https://marketplace.visualstudio.com/items?itemName=rvest.vs-code-prettier-eslint
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}

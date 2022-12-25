@@ -18,6 +18,11 @@ export const ORGANIZATION_EMAIL_DOMAIN = e
   .required()
   .asString()
 
+export const USE_ORGANIZATION_EMAIL_ON_DEVELOPMENT = e
+  .get('USE_ORGANIZATION_EMAIL_ON_DEVELOPMENT')
+  .default('true')
+  .asBool()
+
 export const CLIENT_URL = e.get('CLIENT_URL').required().asUrlString()
 
 export const GOOGLE_CLIENT_ID = e.get('GOOGLE_CLIENT_ID').required().asString()
