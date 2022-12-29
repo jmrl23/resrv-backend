@@ -27,10 +27,11 @@ CREATE TABLE `StudentInformation` (
     `contactNumber` VARCHAR(191) NULL,
     `studentId` VARCHAR(191) NULL,
     `userId` VARCHAR(191) NOT NULL,
-    `departmentId` VARCHAR(191) NOT NULL,
+    `programId` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `StudentInformation_id_key`(`id`),
     UNIQUE INDEX `StudentInformation_studentId_key`(`studentId`),
+    INDEX `StudentInformation_programId_idx`(`programId`),
     UNIQUE INDEX `StudentInformation_userId_key`(`userId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -47,7 +48,7 @@ CREATE TABLE `UserLevel` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Department` (
+CREATE TABLE `Program` (
     `id` VARCHAR(191) NOT NULL,
     `dateCreated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `lastUpdated` DATETIME(3) NOT NULL,
@@ -56,8 +57,8 @@ CREATE TABLE `Department` (
     `alias` VARCHAR(191) NOT NULL,
     `color` VARCHAR(191) NOT NULL,
 
-    UNIQUE INDEX `Department_id_key`(`id`),
-    UNIQUE INDEX `Department_name_alias_key`(`name`, `alias`)
+    UNIQUE INDEX `Program_id_key`(`id`),
+    UNIQUE INDEX `Program_name_alias_key`(`name`, `alias`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -79,9 +80,10 @@ CREATE TABLE `ClassSection` (
     `dateCreated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `lastUpdated` DATETIME(3) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
-    `departmentId` VARCHAR(191) NOT NULL,
+    `programId` VARCHAR(191) NOT NULL,
 
-    UNIQUE INDEX `ClassSection_id_key`(`id`)
+    UNIQUE INDEX `ClassSection_id_key`(`id`),
+    INDEX `ClassSection_programId_idx`(`programId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -101,7 +103,12 @@ CREATE TABLE `ClassSchedule` (
     `studentInformationId` VARCHAR(191) NULL,
     `reservationId` VARCHAR(191) NULL,
 
-    UNIQUE INDEX `ClassSchedule_id_key`(`id`)
+    UNIQUE INDEX `ClassSchedule_id_key`(`id`),
+    INDEX `ClassSchedule_classSectionId_idx`(`classSectionId`),
+    INDEX `ClassSchedule_courseId_idx`(`courseId`),
+    INDEX `ClassSchedule_prerequisiteId_idx`(`prerequisiteId`),
+    INDEX `ClassSchedule_studentInformationId_idx`(`studentInformationId`),
+    INDEX `ClassSchedule_reservationId_idx`(`reservationId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -112,5 +119,6 @@ CREATE TABLE `Reservation` (
     `status` ENUM('PENDING', 'APPROVED', 'DECLINE') NOT NULL DEFAULT 'PENDING',
     `userId` VARCHAR(191) NOT NULL,
 
-    UNIQUE INDEX `Reservation_id_key`(`id`)
+    UNIQUE INDEX `Reservation_id_key`(`id`),
+    INDEX `Reservation_userId_idx`(`userId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

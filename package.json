@@ -12,7 +12,8 @@
     "start": "node .",
     "lint": "eslint -c .eslintrc.json .",
     "db:generate": "prisma generate",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:migrate:dev": "prisma migrate dev"
   },
   "devDependencies": {
     "@mermaid-js/mermaid-cli": "9.1.7",
