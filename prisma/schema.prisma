@@ -71,6 +71,7 @@ model User {
   UserLevel          UserLevel?          @relation(fields: [userLevelId], references: [id])
   userLevelId        String?             @unique
   Reservation        Reservation[]
+  File               File[]
 
   @@unique([id, email])
 }
@@ -192,6 +193,18 @@ model Reservation {
   user           User              @relation(fields: [userId], references: [id])
   userId         String
   classSchedules ClassSchedule[]
+
+  @@index([userId])
+}
+
+// == MODEL: File
+model File {
+  id          String   @unique @default(uuid())
+  dateCreated DateTime @default(now())
+  fileId      String
+  mimeType    String
+  user        User?    @relation(fields: [userId], references: [id])
+  userId      String?
 
   @@index([userId])
 }

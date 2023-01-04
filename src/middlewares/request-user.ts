@@ -16,7 +16,7 @@ export async function requestUser(
   if (authenticate.length !== 2 || scheme !== 'Bearer') return next()
   try {
     const { id } = <{ id: string }>jwt.verify(token, JWT_SECRET)
-    const user = await cached(
+    const user = await cached<User>(
       `user-${id}`,
       () =>
         db.user.findUnique({
@@ -28,7 +28,7 @@ export async function requestUser(
         }),
       60_000
     )
-    request.user = <User>user
+    request.user = user
   } catch (_) {
     /* empty */
   } finally {

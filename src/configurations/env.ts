@@ -39,6 +39,16 @@ export const GOOGLE_REFRESH_TOKEN = e
   .required()
   .asString()
 
+export const GOOGLE_PLAYGROUND_URL = e
+  .get('GOOGLE_PLAYGROUND_URL')
+  .required()
+  .asUrlString()
+
+export const GOOGLE_DRIVE_FOLDER_ID = e
+  .get('GOOGLE_DRIVE_FOLDER_ID')
+  .required()
+  .asString()
+
 export const PASSPORT_GOOGLE_CALLBACK_URL = e
   .get('PASSPORT_GOOGLE_CALLBACK_URL')
   .required()

@@ -1,7 +1,7 @@
 @authorization = keyboard_cat
 
 ### /list
-POST http://localhost:3001/department/list HTTP/1.1
+POST http://localhost:3001/program/list HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
@@ -12,7 +12,7 @@ Authorization: Bearer {{authorization}}
 }
 
 ### /create
-POST http://localhost:3001/department/create HTTP/1.1
+POST http://localhost:3001/program/create HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
@@ -23,7 +23,7 @@ Authorization: Bearer {{authorization}}
 }
 
 ### /get
-POST http://localhost:3001/department/get HTTP/1.1
+POST http://localhost:3001/program/get HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
@@ -32,7 +32,7 @@ Authorization: Bearer {{authorization}}
 }
 
 ### /update
-POST http://localhost:3001/department/update HTTP/1.1
+POST http://localhost:3001/program/update HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
@@ -44,7 +44,7 @@ Authorization: Bearer {{authorization}}
 }
 
 ### /toggle
-POST http://localhost:3001/department/toggle HTTP/1.1
+POST http://localhost:3001/program/toggle HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
@@ -54,7 +54,7 @@ Authorization: Bearer {{authorization}}
 }
 
 ### /delete
-POST http://localhost:3001/department/delete HTTP/1.1
+POST http://localhost:3001/program/delete HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{authorization}}
 

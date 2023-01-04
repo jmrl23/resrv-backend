@@ -22,7 +22,9 @@ recursive(__dirname, ['!*.controller.{ts,js}']).then(async (files) => {
     )
     for (const endpoint of endpoints) {
       const { methods, path } = endpoint
-      console.log(` - [${methods.join(', ')}] ${path}`)
+      console.log(
+        ` - [${methods.length > 0 ? methods.join(', ') : 'ALL'}] ${path}`
+      )
     }
     console.log()
   }

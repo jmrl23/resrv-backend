@@ -5,3 +5,5 @@ sandbox/DATABASE_ERD.svg
 
 .env*local
 prisma/.env
+
+yarn-error.log

@@ -122,3 +122,15 @@ CREATE TABLE `Reservation` (
     UNIQUE INDEX `Reservation_id_key`(`id`),
     INDEX `Reservation_userId_idx`(`userId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `File` (
+    `id` VARCHAR(191) NOT NULL,
+    `dateCreated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `fileId` VARCHAR(191) NOT NULL,
+    `mimeType` VARCHAR(191) NOT NULL,
+    `userId` VARCHAR(191) NULL,
+
+    UNIQUE INDEX `File_id_key`(`id`),
+    INDEX `File_userId_idx`(`userId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
