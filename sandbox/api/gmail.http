@@ -1,0 +1,13 @@
+@authorization = keyboard_cat
+
+### /gmail/send
+POST http://localhost:3001/gmail/send HTTP/1.1
+Authorization: Bearer {{authorization}}
+Content-Type: application/json
+
+{
+  "from": "noreply@resrv.com",
+  "to": ["jojogaitera@gmail.com"],
+  "subject": "Resrv | Confirmed",
+  "text": "Hello, World!"
+}

@@ -53,3 +53,8 @@ export const PASSPORT_GOOGLE_CALLBACK_URL = e
   .get('PASSPORT_GOOGLE_CALLBACK_URL')
   .required()
   .asString()
+
+export const SMTP_TRANSPORT_URL = e
+  .get('SMTP_TRANSPORT_URL')
+  .required()
+  .asUrlObject()
