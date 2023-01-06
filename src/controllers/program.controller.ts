@@ -3,48 +3,19 @@ import { Role } from '@prisma/client'
 import { Router } from 'express'
 import { BadRequestError, InternalServerError } from 'express-response-errors'
 import { authorization, blockDisabled, body } from '../middlewares'
-import { db } from '../services'
+import { db, dbLog } from '../services'
 import {
   ProgramCreate,
   ProgramDelete,
   ProgramGet,
   ProgramList,
-  ProgramToggle,
   ProgramUpdate
 } from '../types/dto'
+import { User } from '../types'
 
 const controller = Router()
 
 controller
-
-  .post(
-    '/list',
-    authorization(Role.ADMIN, Role.REGISTRY, Role.STUDENT),
-    blockDisabled,
-    body(ProgramList),
-    async function (request: Request, response: Response, next: NextFunction) {
-      try {
-        const { take, skip, keyword, isDisabled } = request.body
-        const Programs = await db.program.findMany({
-          where: {
-            isDisabled,
-            OR: [
-              { name: { contains: keyword ?? '' } },
-              { alias: { contains: keyword ?? '' } }
-            ]
-          },
-          skip,
-          take,
-          orderBy: { lastUpdated: 'desc' }
-        })
-        response.json(Programs)
-      } catch (error) {
-        if (error instanceof Error)
-          return next(new InternalServerError(error.message))
-        next(error)
-      }
-    }
-  )
 
   .post(
     '/create',
@@ -54,11 +25,47 @@ controller
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const data = await db.program.create({ data: request.body })
+        await dbLog((request?.user as User)?.id, `[PROGRAM] CREATE ${data.id}`)
         response.json(data)
       } catch (error) {
+        console.error(error)
         if (error instanceof Error)
-          return next(new BadRequestError(error.message))
-        next(error)
+          return next(
+            new BadRequestError(
+              'Cannot process your request, please check your inputs and try again'
+            )
+          )
+      }
+    }
+  )
+
+  .post(
+    '/list',
+    authorization(Role.ADMIN, Role.REGISTRY, Role.STUDENT),
+    blockDisabled,
+    body(ProgramList),
+    async function (request: Request, response: Response, next: NextFunction) {
+      try {
+        const { take, skip, keywords, enabled } = request.body
+        const Programs = await db.program.findMany({
+          where: {
+            enabled,
+            name: {
+              search: keywords?.join(' ')
+            },
+            alias: {
+              search: keywords?.join(' ')
+            }
+          },
+          skip,
+          take,
+          orderBy: { lastUpdated: 'desc' }
+        })
+        response.json(Programs)
+      } catch (error) {
+        console.error(error)
+        if (error instanceof Error)
+          return next(new InternalServerError(error.message))
       }
     }
   )
@@ -76,9 +83,9 @@ controller
         })
         response.json(Programs)
       } catch (error) {
+        console.error(error)
         if (error instanceof Error)
           return next(new InternalServerError(error.message))
-        next(error)
       }
     }
   )
@@ -90,37 +97,21 @@ controller
     body(ProgramUpdate),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const { id, name, alias, color } = request.body
+        const { id } = request.body
         const data = await db.program.update({
           where: { id },
-          data: { name, alias, color }
+          data: request.body
         })
+        await dbLog((request?.user as User)?.id, `[PROGRAM] UPDATE ${data.id}`)
         response.json(data)
       } catch (error) {
+        console.error(error)
         if (error instanceof Error)
-          return next(new BadRequestError(error.message))
-        next(error)
-      }
-    }
-  )
-
-  .post(
-    '/toggle',
-    authorization(Role.ADMIN, Role.REGISTRY),
-    blockDisabled,
-    body(ProgramToggle),
-    async function (request: Request, response: Response, next: NextFunction) {
-      const { id, state } = request.body
-      try {
-        const data = await db.program.update({
-          where: { id },
-          data: { isDisabled: state }
-        })
-        response.json(data)
-      } catch (error) {
-        if (error instanceof Error)
-          return next(new BadRequestError(error.message))
-        next(error)
+          return next(
+            new BadRequestError(
+              'Cannot process your request, please check your inputs and try again'
+            )
+          )
       }
     }
   )
@@ -136,11 +127,12 @@ controller
         const data = await db.program.delete({
           where: { id }
         })
+        await dbLog((request?.user as User)?.id, `[PROGRAM] DELETE ${data.id}`)
         response.json(data)
       } catch (error) {
+        console.error(error)
         if (error instanceof Error)
-          return next(new BadRequestError(error.message))
-        next(error)
+          return next(new BadRequestError('Cannot process your request'))
       }
     }
   )

@@ -17,7 +17,7 @@ export async function requestUser(
   try {
     const { id } = <{ id: string }>jwt.verify(token, JWT_SECRET)
     const user = await cached<User>(
-      `user-${id}`,
+      `user.${id}`,
       () =>
         db.user.findUnique({
           where: { id },

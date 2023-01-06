@@ -1,15 +1,17 @@
+/**
+ * TODO:
+ * - FIx DTO
+ * - Optimize
+ * - Remove redundancy
+ * - Proceed
+ */
+
 import type { NextFunction, Request, Response } from 'express'
 import { User } from './../types/user'
 import { Role } from '@prisma/client'
 import { Router } from 'express'
 import { authorization, blockDisabled, body } from '../middlewares'
-import {
-  UserGet,
-  UserList,
-  UserRemoveRole,
-  UserSetRole,
-  UserToggle
-} from '../types/dto'
+import { UserGet, UserList, UserRemoveRole, UserSetRole } from '../types/dto'
 import {
   BadRequestError,
   InternalServerError,
@@ -36,11 +38,10 @@ controller
     body(UserList),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const { role, take, skip, keyword, isDisabled, programId } =
-          request.body
+        const { role, take, skip, keyword, enabled, programId } = request.body
         const users = await db.user.findMany({
           where: {
-            isDisabled,
+            enabled,
             StudentInformation: {
               programId
             },
@@ -106,27 +107,6 @@ controller
   )
 
   .post(
-    '/toggle',
-    authorization(Role.ADMIN, Role.REGISTRY),
-    blockDisabled,
-    body(UserToggle),
-    async function (request: Request, response: Response, next: NextFunction) {
-      const { id, state } = request.body
-      const user = request.user as User
-      if (user && user.id === id) return response.json(request.user)
-      try {
-        const data = await db.user.update({
-          where: { id },
-          data: { isDisabled: state }
-        })
-        response.json(data)
-      } catch (error) {
-        if (error instanceof Error) next(new BadRequestError(error.message))
-      }
-    }
-  )
-
-  .post(
     '/set-role',
     authorization(Role.ADMIN),
     blockDisabled,
@@ -145,7 +125,7 @@ controller
         if (user) {
           await db.user.update({
             where: { email },
-            data: { isDisabled: false, userLevelId: userLevel.id }
+            data: { enabled: true, userLevelId: userLevel.id }
           })
         }
         response.json(userLevel)
@@ -172,7 +152,7 @@ controller
         if (result.User) {
           await db.user.update({
             where: { id: result.User.id },
-            data: { isDisabled: true },
+            data: { enabled: false },
             include: { UserLevel: true }
           })
         }

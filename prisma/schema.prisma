@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
 generator erd {
@@ -53,15 +54,18 @@ enum ReservationStatus {
   DECLINE
 }
 
-// ============================= MODELS =============================
+enum StudentType {
+  REGULAR
+  IRREGULAR
+}
 
-// == MODEL: User
+// ============================= MODELS =============================
 
 model User {
   id                 String              @unique @default(uuid())
   dateCreated        DateTime            @default(now())
   lastUpdated        DateTime            @updatedAt
-  isDisabled         Boolean             @default(false)
+  enabled            Boolean             @default(false)
   email              String              @unique
   givenName          String?
   familyName         String?
@@ -72,31 +76,29 @@ model User {
   userLevelId        String?             @unique
   Reservation        Reservation[]
   File               File[]
+  Log                Log[]
 
   @@unique([id, email])
+  @@fulltext([givenName, familyName])
 }
 
-// == MODEL: StudentInformation
-
 model StudentInformation {
-  id            String          @unique @default(uuid())
-  dateCreated   DateTime        @default(now())
-  lastUpdated   DateTime        @updatedAt
+  id            String      @unique @default(uuid())
+  dateCreated   DateTime    @default(now())
+  lastUpdated   DateTime    @updatedAt
+  StudentType   StudentType
   gender        Gender
   address       String
   contactNumber String?
-  studentId     String?         @unique // registry ang maglalagay
-  ClassSchedule ClassSchedule[]
-  User          User            @relation(fields: [userId], references: [id])
+  studentId     String?
+  User          User        @relation(fields: [userId], references: [id])
   userId        String
-  Program       Program         @relation(fields: [programId], references: [id])
+  Program       Program     @relation(fields: [programId], references: [id])
   programId     String
 
   @@unique([userId])
   @@index([programId])
 }
-
-// == MODEL: UserLevel
 
 model UserLevel {
   id          String   @unique @default(uuid())
@@ -109,101 +111,105 @@ model UserLevel {
   @@unique([email])
 }
 
-// == MODEL: Department
-
 model Program {
   id                 String               @unique @default(uuid())
   dateCreated        DateTime             @default(now())
   lastUpdated        DateTime             @updatedAt
-  isDisabled         Boolean              @default(false)
+  enabled            Boolean              @default(true)
   name               String
   alias              String
   color              String
+  yearCount          Int
   ClassSection       ClassSection[]
   StudentInformation StudentInformation[]
+  Course             Course[]
 
   @@unique([name, alias])
+  @@fulltext([name, alias])
 }
 
-// == MODEL: Course
-
+// NOTE: No prerequisite, should be check manually by the registry if they can approve the request 
+// for the subject.
 model Course {
-  id                 String          @unique @default(uuid())
-  dateCreated        DateTime        @default(now())
-  lastUpdated        DateTime        @updatedAt
-  isDisabled         Boolean         @default(false)
-  name               String
-  alias              String
-  ClassSchedule      ClassSchedule[] @relation("ScheduleCourse")
-  CoursePrerequisite ClassSchedule[] @relation("Prerequisite")
+  id             String           @unique @default(uuid())
+  dateCreated    DateTime         @default(now())
+  lastUpdated    DateTime         @updatedAt
+  enabled        Boolean          @default(true)
+  name           String
+  alias          String
+  Program        Program?         @relation(fields: [programId], references: [id])
+  programId      String?
+  term           Term
+  CourseSchedule CourseSchedule[]
 
-  @@unique([name, alias])
+  @@unique([name])
+  @@unique([alias])
+  @@index([programId])
+  @@fulltext([name, alias])
 }
 
-// == MODEL: ClassSection
+model CourseSchedule {
+  id          String   @unique @default(uuid())
+  dateCreated DateTime @default(now())
+  lastUpdated DateTime @updatedAt
+
+  Course         Course        @relation(fields: [courseId], references: [id])
+  day            Day
+  from           DateTime
+  to             DateTime
+  ClassSection   ClassSection? @relation(fields: [classSectionId], references: [id])
+  classSectionId String?
+  courseId       String
+
+  @@index([classSectionId])
+  @@index([courseId])
+}
 
 model ClassSection {
-  id            String          @unique @default(uuid())
-  dateCreated   DateTime        @default(now())
-  lastUpdated   DateTime        @updatedAt
-  name          String
-  Program       Program         @relation(fields: [programId], references: [id])
-  programId     String
-  ClassSchedule ClassSchedule[]
+  id          String   @unique @default(uuid())
+  dateCreated DateTime @default(now())
+  lastUpdated DateTime @updatedAt
+  name        String
+  Program     Program  @relation(fields: [programId], references: [id])
+  programId   String
+
+  Course CourseSchedule[]
 
   @@index([programId])
 }
 
-// == MODEL: ClassSchedule
+model Reservation {
+  id          String            @unique @default(uuid())
+  dateCreated DateTime          @default(now())
+  lastUpdated DateTime          @updatedAt
+  status      ReservationStatus @default(PENDING)
+  User        User              @relation(fields: [userId], references: [id])
+  userId      String
+  File        File?             @relation(fields: [fileId], references: [id])
+  fileId      String?
 
-model ClassSchedule {
-  id                   String              @unique @default(uuid())
-  dateCreated          DateTime            @default(now())
-  lastUpdated          DateTime            @updatedAt
-  term                 Term
-  day                  Day
-  timeStart            DateTime
-  timeEnd              DateTime
-  unit                 Int
-  labUnit              Int                 @default(0)
-  ClassSection         ClassSection        @relation(fields: [classSectionId], references: [id])
-  classSectionId       String
-  Course               Course              @relation("ScheduleCourse", fields: [courseId], references: [id])
-  courseId             String
-  Prerequisite         Course              @relation("Prerequisite", fields: [prerequisiteId], references: [id])
-  prerequisiteId       String
-  StudentInformation   StudentInformation? @relation(fields: [studentInformationId], references: [id])
-  studentInformationId String?
-  Reservation          Reservation?        @relation(fields: [reservationId], references: [id])
-  reservationId        String?
-
-  @@index([classSectionId])
-  @@index([courseId])
-  @@index([prerequisiteId])
-  @@index([studentInformationId])
-  @@index([reservationId])
+  @@index([userId])
+  @@index([fileId])
 }
 
-// == MODEL: Reservation
-model Reservation {
-  id             String            @unique @default(uuid())
-  dateCreated    DateTime          @default(now())
-  lastUpdated    DateTime          @updatedAt
-  status         ReservationStatus @default(PENDING)
-  user           User              @relation(fields: [userId], references: [id])
-  userId         String
-  classSchedules ClassSchedule[]
+model File {
+  id          String        @unique @default(uuid())
+  dateCreated DateTime      @default(now())
+  fileId      String        @unique
+  mimeType    String
+  size        Int
+  User        User?         @relation(fields: [userId], references: [id])
+  userId      String?
+  Reservation Reservation[]
 
   @@index([userId])
 }
 
-// == MODEL: File
-model File {
+model Log {
   id          String   @unique @default(uuid())
   dateCreated DateTime @default(now())
-  fileId      String
-  mimeType    String
-  user        User?    @relation(fields: [userId], references: [id])
+  User        User?    @relation(fields: [userId], references: [id])
+  message     String
   userId      String?
 
   @@index([userId])

@@ -1,16 +1,16 @@
 @authorization = keyboard_cat
 
-### /file/upload
+### /upload
 POST http://localhost:3001/drive/upload
 Authorization: Bearer {{authorization}}
-Content-Type: multipart/form-data; boundary=----uploadHotdog
+Content-Type: multipart/form-data; boundary=----DriveUploadAPI
 
-------uploadHotdog
+------DriveUploadAPI
 Content-Disposition: form-data; name="f"; filename="f.png"
 Content-Type: image/png
 
 < 300x300.png
-------uploadHotdog--
+------DriveUploadAPI--
 
-### /file/get
+### /get
 GET http://localhost:3001/drive/get/0f7a8c49-f2ab-422b-897f-db2815a202c1

@@ -49,7 +49,8 @@ controller
           data: {
             fileId: data.id as string,
             mimeType: data.mimeType as string,
-            userId: user?.id
+            userId: user?.id,
+            size: request.file.size
           }
         })
         response.json(uploadedFile)
@@ -65,7 +66,7 @@ controller
       try {
         const id = request.params.id
         const file = await cached<File>(
-          `/drive/file-${id}`,
+          `drive.file.${id}`,
           () =>
             db.file.findUnique({
               where: { id }

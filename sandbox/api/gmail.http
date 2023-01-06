@@ -1,6 +1,6 @@
 @authorization = keyboard_cat
 
-### /gmail/send
+### /send
 POST http://localhost:3001/gmail/send HTTP/1.1
 Authorization: Bearer {{authorization}}
 Content-Type: application/json

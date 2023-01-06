@@ -20,7 +20,7 @@ export function authorization(...role: Role[]) {
     const token = auth.split(' ')[1]
     try {
       const { id } = <{ id: string }>jwt.verify(token, JWT_SECRET)
-      const user = (await cache.get(`user-${id}`)) as null | User
+      const user = (await cache.get(`user.${id}`)) as null | User
       if (!user || !user?.UserLevel || !role.includes(user.UserLevel.role))
         return next(new UnauthorizedError(UNAUTHORIZED_MESSAGE))
       next()

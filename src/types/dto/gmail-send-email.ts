@@ -10,22 +10,22 @@ import { SendMailOptions } from 'nodemailer'
 export class GmailSendEmail implements SendMailOptions {
   @IsOptional()
   @IsString()
-  from: string
+  readonly from: string
 
   @IsArray()
   @ArrayMinSize(1)
   @IsEmail({}, { each: true })
-  to: string[]
+  readonly to: string[]
 
   @IsOptional()
   @IsString()
-  html: string
+  readonly html: string
 
   @IsOptional()
   @IsString()
-  text: string
+  readonly text: string
 
   @IsOptional()
   @IsString()
-  subject: string
+  readonly subject: string
 }

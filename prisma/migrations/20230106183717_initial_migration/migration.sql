@@ -3,7 +3,7 @@ CREATE TABLE `User` (
     `id` VARCHAR(191) NOT NULL,
     `dateCreated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `lastUpdated` DATETIME(3) NOT NULL,
-    `isDisabled` BOOLEAN NOT NULL DEFAULT false,
+    `enabled` BOOLEAN NOT NULL DEFAULT false,
     `email` VARCHAR(191) NOT NULL,
     `givenName` VARCHAR(191) NULL,
     `familyName` VARCHAR(191) NULL,
@@ -14,7 +14,8 @@ CREATE TABLE `User` (
     UNIQUE INDEX `User_id_key`(`id`),
     UNIQUE INDEX `User_email_key`(`email`),
     UNIQUE INDEX `User_userLevelId_key`(`userLevelId`),
-    UNIQUE INDEX `User_id_email_key`(`id`, `email`)
+    UNIQUE INDEX `User_id_email_key`(`id`, `email`),
+    FULLTEXT INDEX `User_givenName_familyName_idx`(`givenName`, `familyName`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -22,6 +23,7 @@ CREATE TABLE `StudentInformation` (
     `id` VARCHAR(191) NOT NULL,
     `dateCreated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `lastUpdated` DATETIME(3) NOT NULL,
+    `StudentType` ENUM('REGULAR', 'IRREGULAR') NOT NULL,
     `gender` ENUM('MALE', 'FEMALE', 'NON_BINARY') NOT NULL,
     `address` VARCHAR(191) NOT NULL,
     `contactNumber` VARCHAR(191) NULL,
@@ -30,7 +32,6 @@ CREATE TABLE `StudentInformation` (
     `programId` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `StudentInformation_id_key`(`id`),
-    UNIQUE INDEX `StudentInformation_studentId_key`(`studentId`),
     INDEX `StudentInformation_programId_idx`(`programId`),
     UNIQUE INDEX `StudentInformation_userId_key`(`userId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -52,13 +53,15 @@ CREATE TABLE `Program` (
     `id` VARCHAR(191) NOT NULL,
     `dateCreated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `lastUpdated` DATETIME(3) NOT NULL,
-    `isDisabled` BOOLEAN NOT NULL DEFAULT false,
+    `enabled` BOOLEAN NOT NULL DEFAULT true,
     `name` VARCHAR(191) NOT NULL,
     `alias` VARCHAR(191) NOT NULL,
     `color` VARCHAR(191) NOT NULL,
+    `yearCount` INTEGER NOT NULL,
 
     UNIQUE INDEX `Program_id_key`(`id`),
-    UNIQUE INDEX `Program_name_alias_key`(`name`, `alias`)
+    UNIQUE INDEX `Program_name_alias_key`(`name`, `alias`),
+    FULLTEXT INDEX `Program_name_alias_idx`(`name`, `alias`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -66,12 +69,33 @@ CREATE TABLE `Course` (
     `id` VARCHAR(191) NOT NULL,
     `dateCreated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `lastUpdated` DATETIME(3) NOT NULL,
-    `isDisabled` BOOLEAN NOT NULL DEFAULT false,
+    `enabled` BOOLEAN NOT NULL DEFAULT true,
     `name` VARCHAR(191) NOT NULL,
     `alias` VARCHAR(191) NOT NULL,
+    `programId` VARCHAR(191) NULL,
+    `term` ENUM('FIRST', 'SECOND') NOT NULL,
 
     UNIQUE INDEX `Course_id_key`(`id`),
-    UNIQUE INDEX `Course_name_alias_key`(`name`, `alias`)
+    INDEX `Course_programId_idx`(`programId`),
+    UNIQUE INDEX `Course_name_key`(`name`),
+    UNIQUE INDEX `Course_alias_key`(`alias`),
+    FULLTEXT INDEX `Course_name_alias_idx`(`name`, `alias`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `CourseSchedule` (
+    `id` VARCHAR(191) NOT NULL,
+    `dateCreated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `lastUpdated` DATETIME(3) NOT NULL,
+    `day` ENUM('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY') NOT NULL,
+    `from` DATETIME(3) NOT NULL,
+    `to` DATETIME(3) NOT NULL,
+    `classSectionId` VARCHAR(191) NULL,
+    `courseId` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `CourseSchedule_id_key`(`id`),
+    INDEX `CourseSchedule_classSectionId_idx`(`classSectionId`),
+    INDEX `CourseSchedule_courseId_idx`(`courseId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -87,40 +111,17 @@ CREATE TABLE `ClassSection` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `ClassSchedule` (
-    `id` VARCHAR(191) NOT NULL,
-    `dateCreated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `lastUpdated` DATETIME(3) NOT NULL,
-    `term` ENUM('FIRST', 'SECOND') NOT NULL,
-    `day` ENUM('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY') NOT NULL,
-    `timeStart` DATETIME(3) NOT NULL,
-    `timeEnd` DATETIME(3) NOT NULL,
-    `unit` INTEGER NOT NULL,
-    `labUnit` INTEGER NOT NULL DEFAULT 0,
-    `classSectionId` VARCHAR(191) NOT NULL,
-    `courseId` VARCHAR(191) NOT NULL,
-    `prerequisiteId` VARCHAR(191) NOT NULL,
-    `studentInformationId` VARCHAR(191) NULL,
-    `reservationId` VARCHAR(191) NULL,
-
-    UNIQUE INDEX `ClassSchedule_id_key`(`id`),
-    INDEX `ClassSchedule_classSectionId_idx`(`classSectionId`),
-    INDEX `ClassSchedule_courseId_idx`(`courseId`),
-    INDEX `ClassSchedule_prerequisiteId_idx`(`prerequisiteId`),
-    INDEX `ClassSchedule_studentInformationId_idx`(`studentInformationId`),
-    INDEX `ClassSchedule_reservationId_idx`(`reservationId`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `Reservation` (
     `id` VARCHAR(191) NOT NULL,
     `dateCreated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `lastUpdated` DATETIME(3) NOT NULL,
     `status` ENUM('PENDING', 'APPROVED', 'DECLINE') NOT NULL DEFAULT 'PENDING',
     `userId` VARCHAR(191) NOT NULL,
+    `fileId` VARCHAR(191) NULL,
 
     UNIQUE INDEX `Reservation_id_key`(`id`),
-    INDEX `Reservation_userId_idx`(`userId`)
+    INDEX `Reservation_userId_idx`(`userId`),
+    INDEX `Reservation_fileId_idx`(`fileId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -129,8 +130,21 @@ CREATE TABLE `File` (
     `dateCreated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `fileId` VARCHAR(191) NOT NULL,
     `mimeType` VARCHAR(191) NOT NULL,
+    `size` INTEGER NOT NULL,
     `userId` VARCHAR(191) NULL,
 
     UNIQUE INDEX `File_id_key`(`id`),
+    UNIQUE INDEX `File_fileId_key`(`fileId`),
     INDEX `File_userId_idx`(`userId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Log` (
+    `id` VARCHAR(191) NOT NULL,
+    `dateCreated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `message` VARCHAR(191) NOT NULL,
+    `userId` VARCHAR(191) NULL,
+
+    UNIQUE INDEX `Log_id_key`(`id`),
+    INDEX `Log_userId_idx`(`userId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

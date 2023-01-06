@@ -15,7 +15,7 @@ export class UserList {
 
   @IsOptional()
   @IsBoolean()
-  readonly isDisabled: boolean
+  readonly enabled: boolean
 
   @IsOptional()
   @IsInt()

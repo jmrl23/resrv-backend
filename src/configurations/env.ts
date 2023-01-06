@@ -3,7 +3,7 @@ import * as e from 'env-var'
 export const NODE_ENV = e
   .get('NODE_ENV')
   .default('development')
-  .asEnum(['development', 'production'])
+  .asEnum(['development', 'production', 'test'])
 
 export const PORT = e.get('PORT').default('3001').asPortNumber()
 

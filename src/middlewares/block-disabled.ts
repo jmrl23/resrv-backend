@@ -8,6 +8,6 @@ export function blockDisabled(
   next: NextFunction
 ) {
   const user = <User>request.user
-  if (!user || !user?.isDisabled) return next()
-  if (user.isDisabled) next(new UnauthorizedError('Account is disabled'))
+  if (!user || user?.enabled) return next()
+  if (!user.enabled) next(new UnauthorizedError('Account is disabled'))
 }

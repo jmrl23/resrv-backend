@@ -1,4 +1,4 @@
-import { IsString, Length } from 'class-validator'
+import { IsInt, IsString, Length } from 'class-validator'
 
 export class ProgramCreate {
   @IsString()
@@ -12,4 +12,7 @@ export class ProgramCreate {
   @IsString()
   @Length(6, 20)
   readonly color: string
+
+  @IsInt({ message: 'Invalid year count' })
+  readonly yearCount: number
 }

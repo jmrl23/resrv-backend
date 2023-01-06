@@ -39,7 +39,7 @@ passport.use(
           where: { email: data.email },
           include: { UserLevel: true }
         })
-        if (user && !user.isDisabled && !user?.UserLevel) {
+        if (user && user.enabled && !user?.UserLevel) {
           await db.user.update({
             where: { id: user.id },
             data: {

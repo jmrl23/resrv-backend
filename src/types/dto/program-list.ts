@@ -1,15 +1,9 @@
-import {
-  IsBoolean,
-  IsInt,
-  IsOptional,
-  IsString,
-  MinLength
-} from 'class-validator'
+import { IsBoolean, IsInt, IsOptional, IsString } from 'class-validator'
 
 export class ProgramList {
   @IsOptional()
   @IsBoolean()
-  readonly isDisabled: boolean
+  readonly enabled: boolean
 
   @IsOptional()
   @IsInt()
@@ -20,7 +14,6 @@ export class ProgramList {
   readonly take: number
 
   @IsOptional()
-  @IsString()
-  @MinLength(1)
-  readonly keyword: string
+  @IsString({ each: true })
+  readonly keywords: string[]
 }
