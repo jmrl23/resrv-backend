@@ -1,7 +1,7 @@
 @authorization = keyboard_cat
 
 ### /list
-POST http://localhost:3001/user/list?auth_bypass=keyboard_cat HTTP/1.1
+POST http://localhost:3001/user/list HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
