@@ -6,8 +6,7 @@ export * from './program-delete'
 
 export * from './user-list'
 export * from './user-get'
-export * from './user-set-role'
-export * from './user-remove-role'
+export * from './user-update'
 
 export * from './userlevel-list'
 

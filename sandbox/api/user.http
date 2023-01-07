@@ -1,7 +1,7 @@
 @authorization = keyboard_cat
 
 ### /list
-POST http://localhost:3001/user/list HTTP/1.1
+POST http://localhost:3001/user/list?auth_bypass=keyboard_cat HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
@@ -9,8 +9,7 @@ Authorization: Bearer {{authorization}}
   "role": ["ADMIN", "REGISTRY"],
   "skip": 0,
   "take": 10,
-  "keyword": "j",
-  "departmentId": "01b30971-f728-4fe5-ab7f-82a7f51a8e9f"
+  "keywords": ["jomariel", "gaitera", "test"]
 }
 
 ### /get
@@ -19,36 +18,15 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "id": "01b30971-f728-4fe5-ab7f-82f7f51a8e9b"
+  "id": "3e54fb89-b037-4ffd-a899-5e7a1fe160c1"
 }
 
-### /toggle
-POST http://localhost:3001/user/toggle HTTP/1.1
+### /update
+POST http://localhost:3001/user/update HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "id": "01b30971-f728-4fe5-ab7f-82f7f51a8e9b",
-  "state": false
-}
-
-### /set-role
-POST http://localhost:3001/user/set-role HTTP/1.1
-Content-Type: application/json
-Authorization: Bearer {{authorization}}
-
-{
-  "id": "01b30971-f728-4fe5-ab7f-82f7f51a8e9b",
-  "email": "jagaitera1@paterostechnologicalcollege.edu.ph",
-  "role": "REGISTRY"
-}
-
-### /remove-role
-POST http://localhost:3001/user/remove-role HTTP/1.1
-Content-Type: application/json
-Authorization: Bearer {{authorization}}
-
-{
-  "id": "01b30971-f728-4fe5-ab7f-82f7f51a8e9b",
-  "email": "jagaitera1@paterostechnologicalcollege.edu.ph"
+  "id": "3e54fb89-b037-4ffd-a899-5e7a1fe160c1",
+  "enabled": true
 }

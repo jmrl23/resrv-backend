@@ -65,7 +65,7 @@ model User {
   id                 String              @unique @default(uuid())
   dateCreated        DateTime            @default(now())
   lastUpdated        DateTime            @updatedAt
-  enabled            Boolean             @default(false)
+  enabled            Boolean             @default(true)
   email              String              @unique
   givenName          String?
   familyName         String?
@@ -79,25 +79,28 @@ model User {
   Log                Log[]
 
   @@unique([id, email])
-  @@fulltext([givenName, familyName])
+  @@fulltext([givenName, familyName, email])
 }
 
 model StudentInformation {
-  id            String      @unique @default(uuid())
-  dateCreated   DateTime    @default(now())
-  lastUpdated   DateTime    @updatedAt
-  StudentType   StudentType
-  gender        Gender
-  address       String
-  contactNumber String?
-  studentId     String?
-  User          User        @relation(fields: [userId], references: [id])
-  userId        String
-  Program       Program     @relation(fields: [programId], references: [id])
-  programId     String
+  id             String       @unique @default(uuid())
+  dateCreated    DateTime     @default(now())
+  lastUpdated    DateTime     @updatedAt
+  studentType    StudentType
+  ClassSection   ClassSection @relation(fields: [classSectionId], references: [id])
+  gender         Gender
+  address        String
+  contactNumber  String?
+  studentId      String?
+  User           User         @relation(fields: [userId], references: [id])
+  userId         String
+  Program        Program      @relation(fields: [programId], references: [id])
+  programId      String
+  classSectionId String
 
   @@unique([userId])
   @@index([programId])
+  @@index([classSectionId])
 }
 
 model UserLevel {
@@ -173,7 +176,8 @@ model ClassSection {
   Program     Program  @relation(fields: [programId], references: [id])
   programId   String
 
-  Course CourseSchedule[]
+  Course             CourseSchedule[]
+  StudentInformation StudentInformation[]
 
   @@index([programId])
 }

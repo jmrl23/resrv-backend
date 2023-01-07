@@ -1,23 +1,15 @@
-/**
- * TODO:
- * - FIx DTO
- * - Optimize
- * - Remove redundancy
- * - Proceed
- */
-
 import type { NextFunction, Request, Response } from 'express'
-import { User } from './../types/user'
+import { User } from './../types'
 import { Role } from '@prisma/client'
 import { Router } from 'express'
 import { authorization, blockDisabled, body } from '../middlewares'
-import { UserGet, UserList, UserRemoveRole, UserSetRole } from '../types/dto'
+import { UserGet, UserList, UserUpdate } from '../types/dto'
 import {
   BadRequestError,
   InternalServerError,
   UnauthorizedError
 } from 'express-response-errors'
-import { db } from '../services'
+import { cache, cached, db, dbLog } from '../services'
 
 const controller = Router()
 
@@ -38,30 +30,33 @@ controller
     body(UserList),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const { role, take, skip, keyword, enabled, programId } = request.body
+        const { role, take, skip, keywords, enabled, programId, studentId } =
+          request.body
         const users = await db.user.findMany({
           where: {
             enabled,
-            StudentInformation: {
-              programId
+            UserLevel: {
+              role: { in: role }
             },
-            AND: [
-              { UserLevel: { role: { in: role } } },
-              {
-                OR: [
-                  { givenName: { contains: keyword ?? '' } },
-                  { email: { contains: keyword ?? '' } },
-                  {
-                    StudentInformation: {
-                      studentId: { contains: keyword ?? '' }
-                    }
-                  }
-                ]
-              }
-            ]
+            givenName: {
+              search: keywords?.join(' ')
+            },
+            familyName: {
+              search: keywords?.join(' ')
+            },
+            email: {
+              search: keywords?.join(' ')
+            },
+            StudentInformation: {
+              programId,
+              studentId
+            }
           },
           skip,
           take,
+          orderBy: {
+            lastUpdated: 'desc'
+          },
           include: {
             UserLevel: true,
             StudentInformation: request.body?.role === Role.STUDENT
@@ -69,9 +64,9 @@ controller
         })
         response.json(users)
       } catch (error) {
+        console.error(error)
         if (error instanceof Error)
           return next(new InternalServerError(error.message))
-        next(error)
       }
     }
   )
@@ -83,82 +78,73 @@ controller
     body(UserGet),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const user = <User>request.user
+        const user = request.user as User
         const { id } = request.body
         if (user?.UserLevel?.role === Role.STUDENT && user.id !== id) {
           return next(
             new UnauthorizedError('Unauthorized to get requested data')
           )
         }
-        const data = await db.user.findUnique({
-          where: { id },
+        const data = await cached(
+          `user.${id}`,
+          () =>
+            db.user.findUnique({
+              where: { id },
+              include: {
+                UserLevel: true,
+                StudentInformation: true
+              }
+            }),
+          60_000
+        )
+        response.json(data)
+      } catch (error) {
+        console.error(error)
+        if (error instanceof Error)
+          return next(new InternalServerError(error.message))
+      }
+    }
+  )
+
+  .post(
+    '/update',
+    authorization(Role.ADMIN, Role.REGISTRY, Role.STUDENT),
+    blockDisabled,
+    body(UserUpdate),
+    async function (request: Request, response: Response, next: NextFunction) {
+      try {
+        if (
+          (request?.user as User)?.id === request?.body?.id &&
+          typeof request.body?.UserLevel?.role !== 'undefined'
+        )
+          return next(new BadRequestError('Cannot perform the request'))
+        if (
+          (request?.user &&
+            (request?.user as User)?.id === request.body.id &&
+            typeof request.body?.enabled !== 'boolean') ||
+          (request?.user as User)?.UserLevel?.role !== 'ADMIN'
+        )
+          return next(new BadRequestError('Cannot perform request'))
+        const data = await db.user.update({
+          where: { id: request.body.id },
+          data: request.body,
           include: {
             UserLevel: true,
             StudentInformation: true
           }
         })
+        await dbLog((request?.user as User)?.id, `[USER] UPDATE ${data.id}`)
+        if (request.body?.id === (request?.user as User)?.id)
+          await cache.put(`user.${request.body?.id}`, data, 60_000)
         response.json(data)
       } catch (error) {
+        console.error(error)
         if (error instanceof Error)
-          return next(new InternalServerError(error.message))
-        next(error)
-      }
-    }
-  )
-
-  .post(
-    '/set-role',
-    authorization(Role.ADMIN),
-    blockDisabled,
-    body(UserSetRole),
-    async function (request: Request, response: Response, next: NextFunction) {
-      try {
-        const { email, role } = request.body
-        if (email === (request.user as User)?.email)
-          return next(new BadRequestError('Cannot modify own data'))
-        const userLevel = await db.userLevel.upsert({
-          where: { email },
-          update: { role },
-          create: { email, role }
-        })
-        const user = await db.user.findUnique({ where: { email } })
-        if (user) {
-          await db.user.update({
-            where: { email },
-            data: { enabled: true, userLevelId: userLevel.id }
-          })
-        }
-        response.json(userLevel)
-      } catch (error) {
-        if (error instanceof Error) next(new BadRequestError(error.message))
-      }
-    }
-  )
-
-  .post(
-    '/remove-role',
-    authorization(Role.ADMIN),
-    blockDisabled,
-    body(UserRemoveRole),
-    async function (request: Request, response: Response, next: NextFunction) {
-      try {
-        const { email } = request.body
-        if (email === (request.user as User)?.email)
-          return next(new BadRequestError('Cannot modify own data'))
-        const result = await db.userLevel.delete({
-          where: { email },
-          include: { User: true }
-        })
-        if (result.User) {
-          await db.user.update({
-            where: { id: result.User.id },
-            data: { enabled: false },
-            include: { UserLevel: true }
-          })
-        }
-        response.json(result)
-      } catch (error) {
-        if (error instanceof Error) next(new BadRequestError(error.message))
+          return next(
+            new BadRequestError(
+              'Cannot process your request, please check your inputs and try again'
+            )
+          )
       }
     }
   )

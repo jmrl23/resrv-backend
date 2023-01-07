@@ -3,7 +3,7 @@ CREATE TABLE `User` (
     `id` VARCHAR(191) NOT NULL,
     `dateCreated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `lastUpdated` DATETIME(3) NOT NULL,
-    `enabled` BOOLEAN NOT NULL DEFAULT false,
+    `enabled` BOOLEAN NOT NULL DEFAULT true,
     `email` VARCHAR(191) NOT NULL,
     `givenName` VARCHAR(191) NULL,
     `familyName` VARCHAR(191) NULL,
@@ -15,7 +15,7 @@ CREATE TABLE `User` (
     UNIQUE INDEX `User_email_key`(`email`),
     UNIQUE INDEX `User_userLevelId_key`(`userLevelId`),
     UNIQUE INDEX `User_id_email_key`(`id`, `email`),
-    FULLTEXT INDEX `User_givenName_familyName_idx`(`givenName`, `familyName`)
+    FULLTEXT INDEX `User_givenName_familyName_email_idx`(`givenName`, `familyName`, `email`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -23,16 +23,18 @@ CREATE TABLE `StudentInformation` (
     `id` VARCHAR(191) NOT NULL,
     `dateCreated` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `lastUpdated` DATETIME(3) NOT NULL,
-    `StudentType` ENUM('REGULAR', 'IRREGULAR') NOT NULL,
+    `studentType` ENUM('REGULAR', 'IRREGULAR') NOT NULL,
     `gender` ENUM('MALE', 'FEMALE', 'NON_BINARY') NOT NULL,
     `address` VARCHAR(191) NOT NULL,
     `contactNumber` VARCHAR(191) NULL,
     `studentId` VARCHAR(191) NULL,
     `userId` VARCHAR(191) NOT NULL,
     `programId` VARCHAR(191) NOT NULL,
+    `classSectionId` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `StudentInformation_id_key`(`id`),
     INDEX `StudentInformation_programId_idx`(`programId`),
+    INDEX `StudentInformation_classSectionId_idx`(`classSectionId`),
     UNIQUE INDEX `StudentInformation_userId_key`(`userId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

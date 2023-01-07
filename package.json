@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "private": true,
   "scripts": {
-    "build": "tsc -p ./",
+    "build": "yarn run db:generate && tsc -p ./",
     "test": "jest --detectOpenHandles",
     "start:dev": "nodemon",
     "start:prod": "yarn run build && dotenv -e sandbox/.env.local -v NODE_ENV=production node .",
@@ -76,6 +76,7 @@
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
     "recursive-readdir": "^2.2.3",
+    "reflect-metadata": "^0.1.13",
     "table": "^6.8.1",
     "uuid": "^9.0.0"
   },

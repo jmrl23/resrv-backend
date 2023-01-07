@@ -21,7 +21,7 @@ export class ProgramUpdate {
 
   @IsOptional()
   @IsString()
-  @Length(3, 10)
+  @Length(3, 20)
   readonly alias: string
 
   @IsOptional()

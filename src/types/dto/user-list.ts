@@ -5,8 +5,7 @@ import {
   IsInt,
   IsOptional,
   IsString,
-  IsUUID,
-  MinLength
+  IsUUID
 } from 'class-validator'
 
 export class UserList {
@@ -26,11 +25,14 @@ export class UserList {
   readonly take: number
 
   @IsOptional()
-  @IsString()
-  @MinLength(1)
-  readonly keyword: string
+  @IsString({ each: true })
+  readonly keywords: string[]
 
   @IsOptional()
   @IsUUID()
-  readonly departmentId: string
+  readonly programId: string
+
+  @IsOptional()
+  @IsUUID()
+  readonly studentId: string
 }
