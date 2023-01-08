@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import type { NextFunction, Request, Response } from 'express'
 import { User } from './../types'
 import { Role } from '@prisma/client'
@@ -119,15 +120,40 @@ controller
         )
           return next(new BadRequestError('Cannot perform the request'))
         if (
-          (request?.user &&
-            (request?.user as User)?.id === request.body.id &&
+          request?.user &&
+          (((request?.user as User)?.id === request.body.id &&
             typeof request.body?.enabled !== 'boolean') ||
-          (request?.user as User)?.UserLevel?.role !== 'ADMIN'
+            (request?.user as User)?.UserLevel?.role !== 'ADMIN')
         )
-          return next(new BadRequestError('Cannot perform request'))
+          return next(new BadRequestError('Cannot perform the request'))
+        const requestBody = { ...request.body }
+        const UserLevel = { ...requestBody.UserLevel }
+        const StudentInformation = { ...requestBody.StudentInformation }
+        delete requestBody.UserLevel
+        delete requestBody.StudentInformation
         const data = await db.user.update({
           where: { id: request.body.id },
-          data: request.body,
+          data: {
+            ...requestBody,
+            UserLevel: {
+              update: {
+                role: UserLevel.role
+              }
+            },
+            StudentInformation:
+              Object.keys(StudentInformation).length > 0
+                ? {
+                    upsert: {
+                      create: {
+                        ...StudentInformation
+                      },
+                      update: {
+                        ...StudentInformation
+                      }
+                    }
+                  }
+                : undefined
+          },
           include: {
             UserLevel: true,
             StudentInformation: true

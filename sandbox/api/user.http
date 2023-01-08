@@ -28,5 +28,8 @@ Authorization: Bearer {{authorization}}
 
 {
   "id": "3e54fb89-b037-4ffd-a899-5e7a1fe160c1",
-  "enabled": true
+  "enabled": true,
+  "UserLevel": {
+    "role": "ADMIN"
+  }
 }

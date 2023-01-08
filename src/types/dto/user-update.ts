@@ -63,10 +63,10 @@ export class UserUpdate {
   @IsOptional()
   @ValidateNested()
   @Type(() => UserLevel)
-  readonly UserLevel: UserLevel
+  UserLevel: UserLevel
 
   @IsOptional()
   @ValidateNested()
   @Type(() => StudentInformation)
-  readonly StudentInformation: StudentInformation
+  StudentInformation: StudentInformation
 }
