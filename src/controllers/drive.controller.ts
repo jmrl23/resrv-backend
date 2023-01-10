@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import type { Request, Response, NextFunction } from 'express'
-import { cached, drive, driveUpload } from '../services'
+import { cached, dbLog, drive, driveUpload } from '../services'
 import { tmpdir } from 'os'
 import { v4 as uuidv4 } from 'uuid'
 import {
@@ -53,6 +53,12 @@ controller
             size: request.file.size
           }
         })
+        await dbLog(
+          (request?.user as User)?.id,
+          `[SERVICE] DRIVE.UPLOAD ${
+            (data as unknown as Record<string, unknown>)?.id
+          }`
+        )
         response.json(uploadedFile)
       } catch (error) {
         if (error instanceof Error)

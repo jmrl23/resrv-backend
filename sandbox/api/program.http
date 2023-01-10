@@ -7,7 +7,7 @@ Authorization: Bearer {{authorization}}
 
 {
   "name": "Bachelor of Science in Information Technology",
-  "alias": "BSIT (1)",
+  "alias": "BSIT",
   "color": "slate-900",
   "yearCount": 4
 }
@@ -39,7 +39,7 @@ Authorization: Bearer {{authorization}}
 
 {
   "id": "ae080cc6-a3f6-471c-80e8-8934b2ef1c62",
-  "name": "Bachelor of Science in Information Technology",
+  "name": "Bachelor of Science in Information Technology (1)",
   "enabled": false,
   "alias": "BSIT (1)",
   "color": "blue-500",

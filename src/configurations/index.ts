@@ -1,2 +1,2 @@
-export * from './env'
-export * from './google'
+export * from './env.configuration'
+export * from './google.configuration'

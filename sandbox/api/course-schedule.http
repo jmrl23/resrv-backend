@@ -1,0 +1,51 @@
+@authorization = keyboard_cat
+
+### /create
+POST http://localhost:3001/course-schedule/create HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "courseId": "7f0dab83-d03c-4ed3-831e-0a00f35c4572",
+  "classSectionId": "926e8fba-a7c0-4060-bff0-cec708cada43"
+}
+
+### /list
+POST http://localhost:3001/course-schedule/list HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "courseId": "7f0dab83-d03c-4ed3-831e-0a00f35c4572",
+  "from": "00:00",
+  "to": "18:00"
+}
+
+### /get
+POST http://localhost:3001/course-schedule/get HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "id": "e262093d-830c-4d06-9d25-2c7a7b6fd41e"
+}
+
+### /update
+POST http://localhost:3001/course-schedule/update HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "id": "e262093d-830c-4d06-9d25-2c7a7b6fd41e",
+  "day": "MONDAY",
+  "to": "18:00"
+}
+
+### /delete
+POST http://localhost:3001/course-schedule/delete HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "id": "e262093d-830c-4d06-9d25-2c7a7b6fd41e"
+}

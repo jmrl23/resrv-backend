@@ -7,7 +7,7 @@ import {
 } from 'class-validator'
 import { SendMailOptions } from 'nodemailer'
 
-export class GmailSendEmail implements SendMailOptions {
+export class GmailSend implements SendMailOptions {
   @IsOptional()
   @IsString()
   readonly from: string

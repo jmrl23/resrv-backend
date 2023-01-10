@@ -5,6 +5,7 @@ export type User =
       include: {
         UserLevel: true
         StudentInformation: true
+        Reservation: true
       }
     }>
   | undefined

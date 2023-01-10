@@ -1,16 +1,19 @@
-import { Router } from 'express'
-import type { Request, Response, NextFunction } from 'express'
-import {
-  CourseCreate,
-  CourseDelete,
-  CourseGet,
-  CourseList,
-  CourseUpdate
-} from '../types/dto'
-import { Role } from '@prisma/client'
+import { NextFunction, Request, Response, Router } from 'express'
 import { authorization, blockDisabled, body } from '../middlewares'
+import { Role } from '@prisma/client'
+import {
+  ClassSectionCreate,
+  ClassSectionDelete,
+  ClassSectionGet,
+  ClassSectionList,
+  ClassSectionUpdate
+} from '../types/dto'
+import {
+  BadRequestError,
+  ForbiddenError,
+  NotFoundError
+} from 'express-response-errors'
 import { db, dbLog } from '../services'
-import { BadRequestError } from 'express-response-errors'
 import { User } from '../types'
 import { tryToPrismaError } from 'prisma-errors'
 
@@ -21,12 +24,27 @@ controller
     '/create',
     authorization(Role.ADMIN, Role.REGISTRY),
     blockDisabled,
-    body(CourseCreate),
+    body(ClassSectionCreate),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const data = await db.course.create({ data: request.body })
-        await dbLog((request?.user as User)?.id, `[COURSE] CREATE ${data.id}`)
-        response.json(data)
+        const { yearLevel, programId } = request.body
+        const program = await db.program.findUnique({
+          where: {
+            id: programId
+          }
+        })
+        if (!program) throw new NotFoundError('Program not found')
+        const maxYearCount = program.yearCount
+        if (!yearLevel || yearLevel > maxYearCount)
+          throw new ForbiddenError('Invalid year level')
+        const classSection = await db.classSection.create({
+          data: request.body
+        })
+        await dbLog(
+          (request?.user as User)?.id,
+          `[CLASSSECTION] CREATE ${classSection.id}`
+        )
+        response.json(classSection)
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
@@ -37,28 +55,27 @@ controller
 
   .post(
     '/list',
-    authorization(Role.ADMIN, Role.REGISTRY, Role.STUDENT),
+    authorization(Role.ADMIN, Role.REGISTRY),
     blockDisabled,
-    body(CourseList),
+    body(ClassSectionList),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const { take, skip, term, keywords, enabled } = request.body
-        const courses = await db.course.findMany({
+        const { keywords, programId, yearLevel, skip, take } = request.body
+        const classSections = await db.classSection.findMany({
           where: {
-            enabled,
+            programId,
+            yearLevel,
             name: {
               search: keywords?.join(' ')
-            },
-            alias: {
-              search: keywords?.join(' ')
-            },
-            term
+            }
           },
           skip,
           take,
-          orderBy: { lastUpdated: 'desc' }
+          orderBy: {
+            name: 'asc'
+          }
         })
-        response.json(courses)
+        response.json(classSections)
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
@@ -69,16 +86,15 @@ controller
 
   .post(
     '/get',
-    authorization(Role.ADMIN, Role.REGISTRY, Role.STUDENT),
+    authorization(Role.ADMIN, Role.REGISTRY),
     blockDisabled,
-    body(CourseGet),
+    body(ClassSectionGet),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const { id } = request.body
-        const course = await db.course.findUnique({
-          where: { id }
+        const classSection = await db.classSection.findUnique({
+          where: request.body
         })
-        response.json(course)
+        response.json(classSection)
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
@@ -91,17 +107,19 @@ controller
     '/update',
     authorization(Role.ADMIN, Role.REGISTRY),
     blockDisabled,
-    body(CourseUpdate),
+    body(ClassSectionUpdate),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const { id } = request.body
         delete request.body.id
-        console.log(request.body)
-        const data = await db.course.update({
+        const data = await db.classSection.update({
           where: { id },
           data: request.body
         })
-        await dbLog((request?.user as User)?.id, `[COURSE] UPDATE ${data.id}`)
+        await dbLog(
+          (request?.user as User)?.id,
+          `[CLASSSECTION] UPDATE ${data.id}`
+        )
         response.json(data)
       } catch (error) {
         console.error(error)
@@ -115,14 +133,16 @@ controller
     '/delete',
     authorization(Role.ADMIN, Role.REGISTRY),
     blockDisabled,
-    body(CourseDelete),
+    body(ClassSectionDelete),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const { id } = request.body
-        const data = await db.course.delete({
-          where: { id }
+        const data = await db.classSection.delete({
+          where: request.body
         })
-        await dbLog((request?.user as User)?.id, `[COURSE] DELETE ${data.id}`)
+        await dbLog(
+          (request?.user as User)?.id,
+          `[CLASSSECTION] DELETE ${data.id}`
+        )
         response.json(data)
       } catch (error) {
         console.error(error)

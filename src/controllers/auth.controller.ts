@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import jwt from 'jsonwebtoken'
 import type { NextFunction, Request, Response } from 'express'
 import { Router } from 'express'
@@ -11,7 +12,7 @@ import {
   GOOGLE_CLIENT_SECRET,
   ORGANIZATION_EMAIL_DOMAIN,
   PASSPORT_GOOGLE_CALLBACK_URL,
-  USE_ORGANIZATION_EMAIL_ON_DEVELOPMENT,
+  BYPASS_ORGANIZATION_EMAIL_FILTER_ON_DEVELOPMENT,
   NODE_ENV
 } from '../configurations'
 import passport from 'passport'
@@ -30,7 +31,7 @@ passport.use(
         (NODE_ENV !== 'development' &&
           !data.email?.endsWith(`@${ORGANIZATION_EMAIL_DOMAIN}`)) ||
         (NODE_ENV === 'development' &&
-          USE_ORGANIZATION_EMAIL_ON_DEVELOPMENT &&
+          !BYPASS_ORGANIZATION_EMAIL_FILTER_ON_DEVELOPMENT &&
           !data.email?.endsWith(`@${ORGANIZATION_EMAIL_DOMAIN}`))
       )
         return next(null, undefined)
@@ -63,9 +64,7 @@ passport.use(
             userLevelId: userLevel
               ? userLevel.id
               : await db.userLevel
-                  // eslint-disable-next-line indent
                   .create({ data: { email: data.email as string } })
-                  // eslint-disable-next-line indent
                   .then(({ id }) => id)
           }
         })

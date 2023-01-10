@@ -23,7 +23,8 @@ export async function requestUser(
           where: { id },
           include: {
             UserLevel: true,
-            StudentInformation: true
+            StudentInformation: true,
+            Reservation: true
           }
         }),
       60_000

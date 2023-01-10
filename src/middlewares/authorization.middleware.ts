@@ -1,7 +1,12 @@
 import type { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { cache } from './../services'
-import { AUTH_BYPASS_KEY, JWT_SECRET } from './../configurations'
+import { cache } from '../services'
+import {
+  AUTHORIZATION_KEY,
+  BYPASS_AUTHORIZATION_ON_DEVELOPMENT,
+  JWT_SECRET,
+  NODE_ENV
+} from '../configurations'
 import { Role } from '@prisma/client'
 import { UnauthorizedError } from 'express-response-errors'
 import { User } from '../types'
@@ -13,7 +18,11 @@ export function authorization(...role: Role[]) {
     _response: Response,
     next: NextFunction
   ) {
-    if (request.query?.auth_bypass === AUTH_BYPASS_KEY) return next()
+    if (
+      request.query?.authorization === AUTHORIZATION_KEY ||
+      (NODE_ENV === 'development' && BYPASS_AUTHORIZATION_ON_DEVELOPMENT)
+    )
+      return next()
     const auth = request.header('authorization')
     if (!auth || !auth.startsWith('Bearer'))
       return next(new UnauthorizedError(UNAUTHORIZED_MESSAGE))

@@ -140,6 +140,7 @@ model Course {
   enabled        Boolean          @default(true)
   name           String
   alias          String
+  lecUnit        Int
   Program        Program?         @relation(fields: [programId], references: [id])
   programId      String?
   term           Term
@@ -157,9 +158,9 @@ model CourseSchedule {
   lastUpdated DateTime @updatedAt
 
   Course         Course        @relation(fields: [courseId], references: [id])
-  day            Day
-  from           DateTime
-  to             DateTime
+  day            Day?
+  from           DateTime?     @db.Time()
+  to             DateTime?     @db.Time()
   ClassSection   ClassSection? @relation(fields: [classSectionId], references: [id])
   classSectionId String?
   courseId       String
@@ -172,6 +173,7 @@ model ClassSection {
   id          String   @unique @default(uuid())
   dateCreated DateTime @default(now())
   lastUpdated DateTime @updatedAt
+  yearLevel   Int
   name        String
   Program     Program  @relation(fields: [programId], references: [id])
   programId   String
@@ -180,6 +182,7 @@ model ClassSection {
   StudentInformation StudentInformation[]
 
   @@index([programId])
+  @@fulltext([name])
 }
 
 model Reservation {

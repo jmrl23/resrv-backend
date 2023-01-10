@@ -4,7 +4,7 @@ import {
   GOOGLE_CLIENT_SECRET,
   GOOGLE_PLAYGROUND_URL,
   GOOGLE_REFRESH_TOKEN
-} from '../configurations'
+} from './env.configuration'
 
 const googleOAuth2Client = new google.auth.OAuth2(
   GOOGLE_CLIENT_ID,

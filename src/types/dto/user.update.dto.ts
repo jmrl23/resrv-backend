@@ -12,11 +12,6 @@ import {
 } from 'class-validator'
 import { Role, Gender, StudentType } from '@prisma/client'
 
-class Program {
-  @IsUUID()
-  readonly id: string
-}
-
 class UserLevel {
   @IsEnum(Role)
   role: Role
@@ -47,9 +42,8 @@ class StudentInformation {
   readonly studentId: string
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => Program)
-  readonly Program: Program
+  @IsUUID()
+  readonly programId: string
 }
 
 export class UserUpdate {

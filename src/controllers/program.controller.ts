@@ -1,7 +1,7 @@
 import type { NextFunction, Response, Request } from 'express'
 import { Role } from '@prisma/client'
 import { Router } from 'express'
-import { BadRequestError, InternalServerError } from 'express-response-errors'
+import { BadRequestError } from 'express-response-errors'
 import { authorization, blockDisabled, body } from '../middlewares'
 import { db, dbLog } from '../services'
 import {
@@ -12,6 +12,7 @@ import {
   ProgramUpdate
 } from '../types/dto'
 import { User } from '../types'
+import { tryToPrismaError } from 'prisma-errors'
 
 const controller = Router()
 
@@ -30,11 +31,7 @@ controller
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
-          return next(
-            new BadRequestError(
-              'Cannot process your request, please check your inputs and try again'
-            )
-          )
+          return next(new BadRequestError(tryToPrismaError(error).message))
       }
     }
   )
@@ -47,7 +44,7 @@ controller
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const { take, skip, keywords, enabled } = request.body
-        const Programs = await db.program.findMany({
+        const programs = await db.program.findMany({
           where: {
             enabled,
             name: {
@@ -61,11 +58,11 @@ controller
           take,
           orderBy: { lastUpdated: 'desc' }
         })
-        response.json(Programs)
+        response.json(programs)
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
-          return next(new InternalServerError(error.message))
+          return next(new BadRequestError(tryToPrismaError(error).message))
       }
     }
   )
@@ -78,14 +75,14 @@ controller
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const { id } = request.body
-        const Programs = await db.program.findUnique({
+        const program = await db.program.findUnique({
           where: { id }
         })
-        response.json(Programs)
+        response.json(program)
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
-          return next(new InternalServerError(error.message))
+          return next(new BadRequestError(tryToPrismaError(error).message))
       }
     }
   )
@@ -98,6 +95,7 @@ controller
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const { id } = request.body
+        delete request.body.id
         const data = await db.program.update({
           where: { id },
           data: request.body
@@ -107,11 +105,7 @@ controller
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
-          return next(
-            new BadRequestError(
-              'Cannot process your request, please check your inputs and try again'
-            )
-          )
+          return next(new BadRequestError(tryToPrismaError(error).message))
       }
     }
   )
@@ -132,7 +126,7 @@ controller
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
-          return next(new BadRequestError('Cannot process your request'))
+          return next(new BadRequestError(tryToPrismaError(error).message))
       }
     }
   )

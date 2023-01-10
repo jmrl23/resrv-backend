@@ -5,12 +5,9 @@ import { Role } from '@prisma/client'
 import { Router } from 'express'
 import { authorization, blockDisabled, body } from '../middlewares'
 import { UserGet, UserList, UserUpdate } from '../types/dto'
-import {
-  BadRequestError,
-  InternalServerError,
-  UnauthorizedError
-} from 'express-response-errors'
+import { BadRequestError, UnauthorizedError } from 'express-response-errors'
 import { cache, cached, db, dbLog } from '../services'
+import { tryToPrismaError } from 'prisma-errors'
 
 const controller = Router()
 
@@ -67,7 +64,7 @@ controller
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
-          return next(new InternalServerError(error.message))
+          return next(new BadRequestError(tryToPrismaError(error).message))
       }
     }
   )
@@ -93,7 +90,8 @@ controller
               where: { id },
               include: {
                 UserLevel: true,
-                StudentInformation: true
+                StudentInformation: true,
+                Reservation: true
               }
             }),
           60_000
@@ -102,7 +100,7 @@ controller
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
-          return next(new InternalServerError(error.message))
+          return next(new BadRequestError(tryToPrismaError(error).message))
       }
     }
   )
@@ -166,11 +164,7 @@ controller
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
-          return next(
-            new BadRequestError(
-              'Cannot process your request, please check your inputs and try again'
-            )
-          )
+          return next(new BadRequestError(tryToPrismaError(error).message))
       }
     }
   )

@@ -1,0 +1,54 @@
+@authorization = keyboard_cat
+
+### /create
+POST http://localhost:3001/course/create HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "programId": "86aa6920-f231-4f69-b493-a82306c53931",
+  "name": "Introduction To Web Technologies",
+  "lecUnit": 4,
+  "alias": "ITWT",
+  "term": "FIRST"
+}
+
+### /list
+POST http://localhost:3001/course/list HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "skip": 0,
+  "take": 10,
+  "term": "FIRST",
+  "keywords": ["introduction"]
+}
+
+### /get
+POST http://localhost:3001/course/get HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "id": "63b83c41-be39-4600-bb19-0e9a018b72fe"
+}
+
+### /update
+POST http://localhost:3001/course/update HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "id": "63b83c41-be39-4600-bb19-0e9a018b72fe",
+  "name": "Introduction To Web Technologies (Updated)"
+}
+
+### /delete
+POST http://localhost:3001/course/delete HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "id": "63b83c41-be39-4600-bb19-0e9a018b72fe"
+}

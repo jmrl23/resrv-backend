@@ -1,0 +1,51 @@
+@authorization = keyboard_cat
+
+### /create
+POST http://localhost:3001/class-section/create HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "programId": "86aa6920-f231-4f69-b493-a82306c53931",
+  "name": "BSIT-3B",
+  "yearLevel": 3
+}
+
+### /list
+POST http://localhost:3001/class-section/list HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "skip": 0,
+  "take": 10,
+  "keywords": ["BSIT"]
+}
+
+### /get
+POST http://localhost:3001/class-section/get HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "id": "05291898-43e9-4309-81db-abd0e6063ac9"
+}
+
+### /update
+POST http://localhost:3001/class-section/update HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "id": "63b83c41-be39-4600-bb19-0e9a018b72fe",
+  "name": "BSIT-3B (edited)"
+}
+
+### /delete
+POST http://localhost:3001/class-section/delete HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "id": "63b83c41-be39-4600-bb19-0e9a018b72fe"
+}

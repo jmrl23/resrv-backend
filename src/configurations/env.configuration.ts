@@ -11,19 +11,29 @@ export const JWT_SECRET = e.get('JWT_SECRET').required().asString()
 
 export const TRUST_PROXY = e.get('TRUST_PROXY').required().asString()
 
-export const AUTH_BYPASS_KEY = e.get('AUTH_BYPASS_KEY').required().asString()
+export const AUTHORIZATION_KEY = e
+  .get('AUTHORIZATION_KEY')
+  .required()
+  .asString()
+
+export const BYPASS_AUTHORIZATION_ON_DEVELOPMENT = e
+  .get('BYPASS_AUTHORIZATION_ON_DEVELOPMENT')
+  .default('false')
+  .asBool()
 
 export const ORGANIZATION_EMAIL_DOMAIN = e
   .get('ORGANIZATION_EMAIL_DOMAIN')
   .required()
   .asString()
 
-export const USE_ORGANIZATION_EMAIL_ON_DEVELOPMENT = e
-  .get('USE_ORGANIZATION_EMAIL_ON_DEVELOPMENT')
-  .default('true')
+export const BYPASS_ORGANIZATION_EMAIL_FILTER_ON_DEVELOPMENT = e
+  .get('BYPASS_ORGANIZATION_EMAIL_FILTER_ON_DEVELOPMENT')
+  .default('false')
   .asBool()
 
 export const CLIENT_URL = e.get('CLIENT_URL').required().asUrlString()
+
+export const CORS_WHITELIST = e.get('CORS_WHITELIST').required().asArray(',')
 
 export const GOOGLE_CLIENT_ID = e.get('GOOGLE_CLIENT_ID').required().asString()
 

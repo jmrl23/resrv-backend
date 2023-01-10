@@ -1,4 +1,4 @@
-import { cached } from '../cache'
+import { cached } from '../cache.service'
 
 describe('cache service', () => {
   it('save something to cache and retrieve it', async () => {

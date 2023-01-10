@@ -1,16 +1,16 @@
 import { Router } from 'express'
 import type { Request, Response, NextFunction } from 'express'
-import {
-  CourseCreate,
-  CourseDelete,
-  CourseGet,
-  CourseList,
-  CourseUpdate
-} from '../types/dto'
-import { Role } from '@prisma/client'
 import { authorization, blockDisabled, body } from '../middlewares'
-import { db, dbLog } from '../services'
+import { Role } from '@prisma/client'
+import {
+  CourseScheduleCreate,
+  CourseScheduleDelete,
+  CourseScheduleGet,
+  CourseScheduleList,
+  CourseScheduleUpdate
+} from '../types/dto'
 import { BadRequestError } from 'express-response-errors'
+import { db, dbLog } from '../services'
 import { User } from '../types'
 import { tryToPrismaError } from 'prisma-errors'
 
@@ -21,12 +21,17 @@ controller
     '/create',
     authorization(Role.ADMIN, Role.REGISTRY),
     blockDisabled,
-    body(CourseCreate),
+    body(CourseScheduleCreate),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const data = await db.course.create({ data: request.body })
-        await dbLog((request?.user as User)?.id, `[COURSE] CREATE ${data.id}`)
-        response.json(data)
+        const courseSchedule = await db.courseSchedule.create({
+          data: request.body
+        })
+        await dbLog(
+          (request?.user as User)?.id,
+          `[COURSESCHEDULE] CREATE ${courseSchedule.id}`
+        )
+        response.json(courseSchedule)
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
@@ -37,28 +42,32 @@ controller
 
   .post(
     '/list',
-    authorization(Role.ADMIN, Role.REGISTRY, Role.STUDENT),
+    authorization(Role.ADMIN, Role.REGISTRY),
     blockDisabled,
-    body(CourseList),
+    body(CourseScheduleList),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const { take, skip, term, keywords, enabled } = request.body
-        const courses = await db.course.findMany({
+        const { from, to, day, courseId, classSectionId, skip, take } =
+          request.body
+
+        console.log(from, to)
+        const courseSchedules = await db.courseSchedule.findMany({
           where: {
-            enabled,
-            name: {
-              search: keywords?.join(' ')
-            },
-            alias: {
-              search: keywords?.join(' ')
-            },
-            term
+            courseId,
+            classSectionId,
+            day,
+            AND: {
+              from: from ? { gte: new Date('0 ' + from) } : undefined,
+              to: to ? { lte: new Date('0 ' + to) } : undefined
+            }
           },
           skip,
           take,
-          orderBy: { lastUpdated: 'desc' }
+          orderBy: {
+            lastUpdated: 'desc'
+          }
         })
-        response.json(courses)
+        response.json(courseSchedules)
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
@@ -69,16 +78,15 @@ controller
 
   .post(
     '/get',
-    authorization(Role.ADMIN, Role.REGISTRY, Role.STUDENT),
+    authorization(Role.ADMIN, Role.REGISTRY),
     blockDisabled,
-    body(CourseGet),
+    body(CourseScheduleGet),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const { id } = request.body
-        const course = await db.course.findUnique({
-          where: { id }
+        const courseSchedule = await db.courseSchedule.findUnique({
+          where: request.body
         })
-        response.json(course)
+        response.json(courseSchedule)
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
@@ -91,18 +99,24 @@ controller
     '/update',
     authorization(Role.ADMIN, Role.REGISTRY),
     blockDisabled,
-    body(CourseUpdate),
+    body(CourseScheduleUpdate),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const { id } = request.body
         delete request.body.id
-        console.log(request.body)
-        const data = await db.course.update({
+        if (typeof request.body?.from !== 'undefined')
+          request.body.from = new Date('0 ' + request.body.from)
+        if (typeof request.body?.to !== 'undefined')
+          request.body.to = new Date('0 ' + request.body.to)
+        const courseSchedule = await db.courseSchedule.update({
           where: { id },
           data: request.body
         })
-        await dbLog((request?.user as User)?.id, `[COURSE] UPDATE ${data.id}`)
-        response.json(data)
+        await dbLog(
+          (request?.user as User)?.id,
+          `[COURSESCHEDULE] UPDATE ${courseSchedule.id}`
+        )
+        response.json(courseSchedule)
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
@@ -115,15 +129,18 @@ controller
     '/delete',
     authorization(Role.ADMIN, Role.REGISTRY),
     blockDisabled,
-    body(CourseDelete),
+    body(CourseScheduleDelete),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const { id } = request.body
-        const data = await db.course.delete({
+        const courseSchedule = await db.courseSchedule.delete({
           where: { id }
         })
-        await dbLog((request?.user as User)?.id, `[COURSE] DELETE ${data.id}`)
-        response.json(data)
+        await dbLog(
+          (request?.user as User)?.id,
+          `[COURSESCHEDULE] DELETE ${courseSchedule.id}`
+        )
+        response.json(courseSchedule)
       } catch (error) {
         console.error(error)
         if (error instanceof Error)

@@ -10,7 +10,7 @@ describe('db service', () => {
   })
 
   it('send an email', async () => {
-    const { sendMail } = await import('../gmail')
+    const { sendMail } = await import('../gmail.service')
     expect(
       sendMail({
         to: ['jojogaitera@gmail.com'],

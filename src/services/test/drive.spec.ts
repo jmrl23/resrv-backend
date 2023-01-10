@@ -9,7 +9,7 @@ describe('db service', () => {
   })
 
   it('save file to drive', async () => {
-    const { driveUpload } = await import('../drive')
+    const { driveUpload } = await import('../drive.service')
     expect(
       await driveUpload(join(__dirname, '../../../sandbox/api/300x300.png'))
     ).toBeTruthy()

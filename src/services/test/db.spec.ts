@@ -10,12 +10,12 @@ describe('db service', () => {
   })
 
   it('get the number programs saved in database', async () => {
-    const { db } = await import('../db')
+    const { db } = await import('../db.service')
     expect(typeof (await db.program.count({ where: {} }))).toBe('number')
   })
 
   it('save a log', async () => {
-    const { db, dbLog } = await import('../db')
+    const { db, dbLog } = await import('../db.service')
     const id = await dbLog(undefined, `test - ${uuidv4()}`)
     expect(typeof id).toBe('string')
     await db.log.delete({ where: { id } })
