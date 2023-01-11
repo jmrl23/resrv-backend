@@ -57,7 +57,7 @@ controller
           },
           include: {
             UserLevel: true,
-            StudentInformation: request.body?.role === Role.STUDENT
+            StudentInformation: true
           }
         })
         response.json(users)
@@ -90,11 +90,10 @@ controller
               where: { id },
               include: {
                 UserLevel: true,
-                StudentInformation: true,
-                Reservation: true
+                StudentInformation: true
               }
             }),
-          60_000
+          30_000
         )
         response.json(data)
       } catch (error) {
@@ -132,7 +131,6 @@ controller
         const data = await db.user.update({
           where: { id: request.body.id },
           data: {
-            ...requestBody,
             UserLevel: {
               update: {
                 role: UserLevel.role
@@ -142,15 +140,48 @@ controller
               Object.keys(StudentInformation).length > 0
                 ? {
                     upsert: {
-                      create: {
-                        ...StudentInformation
-                      },
                       update: {
-                        ...StudentInformation
+                        studentType: StudentInformation?.studentType,
+                        gender: StudentInformation?.gender,
+                        studentId: StudentInformation?.studentId,
+                        contactNumber: StudentInformation?.contactNumber,
+                        address: StudentInformation?.address,
+                        Program: StudentInformation?.programId
+                          ? {
+                              connect: {
+                                id: StudentInformation?.programId
+                              }
+                            }
+                          : undefined,
+                        ClassSection: StudentInformation?.classSectionId
+                          ? {
+                              connect: {
+                                id: StudentInformation?.classSectionId
+                              }
+                            }
+                          : undefined
+                      },
+                      create: {
+                        studentType: StudentInformation?.studentType,
+                        gender: StudentInformation?.gender,
+                        studentId: StudentInformation?.studentId,
+                        contactNumber: StudentInformation?.contactNumber,
+                        address: StudentInformation?.address,
+                        Program: {
+                          connect: {
+                            id: StudentInformation?.programId
+                          }
+                        },
+                        ClassSection: {
+                          connect: {
+                            id: StudentInformation?.classSectionId
+                          }
+                        }
                       }
                     }
                   }
-                : undefined
+                : undefined,
+            ...requestBody
           },
           include: {
             UserLevel: true,

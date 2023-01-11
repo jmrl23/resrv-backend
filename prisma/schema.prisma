@@ -51,7 +51,8 @@ enum Day {
 enum ReservationStatus {
   PENDING
   APPROVED
-  DECLINE
+  DECLINED
+  CANCELLED
 }
 
 enum StudentType {
@@ -74,7 +75,6 @@ model User {
   StudentInformation StudentInformation?
   UserLevel          UserLevel?          @relation(fields: [userLevelId], references: [id])
   userLevelId        String?             @unique
-  Reservation        Reservation[]
   File               File[]
   Log                Log[]
 
@@ -83,19 +83,21 @@ model User {
 }
 
 model StudentInformation {
-  id             String       @unique @default(uuid())
-  dateCreated    DateTime     @default(now())
-  lastUpdated    DateTime     @updatedAt
+  id          String   @unique @default(uuid())
+  dateCreated DateTime @default(now())
+  lastUpdated DateTime @updatedAt
+
   studentType    StudentType
-  ClassSection   ClassSection @relation(fields: [classSectionId], references: [id])
   gender         Gender
   address        String
   contactNumber  String?
   studentId      String?
-  User           User         @relation(fields: [userId], references: [id])
+  User           User          @relation(fields: [userId], references: [id])
   userId         String
-  Program        Program      @relation(fields: [programId], references: [id])
+  Program        Program       @relation(fields: [programId], references: [id])
   programId      String
+  Reservations   Reservation[]
+  ClassSection   ClassSection  @relation(fields: [classSectionId], references: [id])
   classSectionId String
 
   @@unique([userId])
@@ -141,8 +143,8 @@ model Course {
   name           String
   alias          String
   lecUnit        Int
-  Program        Program?         @relation(fields: [programId], references: [id])
-  programId      String?
+  Program        Program          @relation(fields: [programId], references: [id])
+  programId      String
   term           Term
   CourseSchedule CourseSchedule[]
 
@@ -152,56 +154,79 @@ model Course {
   @@fulltext([name, alias])
 }
 
+model ClassSection {
+  id          String   @unique @default(uuid())
+  dateCreated DateTime @default(now())
+  lastUpdated DateTime @updatedAt
+
+  yearLevel               Int
+  name                    String               @unique
+  Program                 Program              @relation(fields: [programId], references: [id])
+  programId               String
+  maximumCapacity         Int                  @default(50)
+  maximumIrregularStudent Int                  @default(10)
+  totalStudentCount       Int                  @default(0)
+  StudentInformation      StudentInformation[]
+  CourseSchedule          CourseSchedule[]
+
+  @@index([programId])
+  @@fulltext([name])
+}
+
 model CourseSchedule {
   id          String   @unique @default(uuid())
   dateCreated DateTime @default(now())
   lastUpdated DateTime @updatedAt
 
-  Course         Course        @relation(fields: [courseId], references: [id])
-  day            Day?
-  from           DateTime?     @db.Time()
-  to             DateTime?     @db.Time()
-  ClassSection   ClassSection? @relation(fields: [classSectionId], references: [id])
-  classSectionId String?
+  day  Day?
+  from DateTime? @db.Time()
+  to   DateTime? @db.Time()
+
+  ClassSection   ClassSection                  @relation(fields: [classSectionId], references: [id])
+  Course         Course                        @relation(fields: [courseId], references: [id])
+  Reservations   CourseScheduleOnReservation[]
+  classSectionId String
   courseId       String
 
   @@index([classSectionId])
   @@index([courseId])
 }
 
-model ClassSection {
+model Reservation {
   id          String   @unique @default(uuid())
   dateCreated DateTime @default(now())
   lastUpdated DateTime @updatedAt
-  yearLevel   Int
-  name        String
-  Program     Program  @relation(fields: [programId], references: [id])
-  programId   String
 
-  Course             CourseSchedule[]
-  StudentInformation StudentInformation[]
+  status ReservationStatus @default(PENDING)
+  File   File?             @relation(fields: [fileId], references: [id])
+  fileId String?
 
-  @@index([programId])
-  @@fulltext([name])
+  CourseSchedule       CourseScheduleOnReservation[]
+  StudentInformation   StudentInformation?           @relation(fields: [studentInformationId], references: [id])
+  studentInformationId String?
+
+  @@index([fileId])
+  @@index([studentInformationId])
 }
 
-model Reservation {
-  id          String            @unique @default(uuid())
-  dateCreated DateTime          @default(now())
-  lastUpdated DateTime          @updatedAt
-  status      ReservationStatus @default(PENDING)
-  User        User              @relation(fields: [userId], references: [id])
-  userId      String
-  File        File?             @relation(fields: [fileId], references: [id])
-  fileId      String?
+model CourseScheduleOnReservation {
+  id          String   @unique @default(uuid())
+  dateCreated DateTime @default(now())
+  lastUpdated DateTime @updatedAt
 
-  @@index([userId])
-  @@index([fileId])
+  CourseSchedule   CourseSchedule? @relation(fields: [courseScheduleId], references: [id])
+  courseScheduleId String?
+  Reservation      Reservation?    @relation(fields: [reservationId], references: [id])
+  reservationId    String?
+
+  @@index([courseScheduleId])
+  @@index([reservationId])
 }
 
 model File {
-  id          String        @unique @default(uuid())
-  dateCreated DateTime      @default(now())
+  id          String   @unique @default(uuid())
+  dateCreated DateTime @default(now())
+
   fileId      String        @unique
   mimeType    String
   size        Int
@@ -215,9 +240,10 @@ model File {
 model Log {
   id          String   @unique @default(uuid())
   dateCreated DateTime @default(now())
-  User        User?    @relation(fields: [userId], references: [id])
-  message     String
-  userId      String?
+
+  User    User?   @relation(fields: [userId], references: [id])
+  message String
+  userId  String?
 
   @@index([userId])
 }

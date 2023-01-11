@@ -29,7 +29,7 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "id": "ae080cc6-a3f6-471c-80e8-8934b2ef1c62"
+  "id": "7fe97ce1-6979-4acf-b614-58e9807817da"
 }
 
 ### /update
@@ -38,12 +38,11 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "id": "ae080cc6-a3f6-471c-80e8-8934b2ef1c62",
-  "name": "Bachelor of Science in Information Technology (1)",
+  "id": "7fe97ce1-6979-4acf-b614-58e9807817da",
+  "name": "Bachelor of Science in Information Technology (Updated)",
   "enabled": false,
-  "alias": "BSIT (1)",
-  "color": "blue-500",
-  "yearCount": 2
+  "alias": "BSIT (Updated)",
+  "color": "blue-500"
 }
 
 ### /delete
@@ -52,5 +51,5 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "id": "ae080cc6-a3f6-471c-80e8-8934b2ef1c62"
+  "id": "ac62797f-51a6-4b72-8f50-9c31a6a21fb7"
 }

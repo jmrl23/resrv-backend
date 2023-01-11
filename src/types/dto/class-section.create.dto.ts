@@ -1,4 +1,4 @@
-import { IsInt, IsString, IsUUID, MinLength } from 'class-validator'
+import { IsInt, IsOptional, IsString, IsUUID, MinLength } from 'class-validator'
 
 export class ClassSectionCreate {
   @IsInt()
@@ -10,4 +10,16 @@ export class ClassSectionCreate {
 
   @IsUUID()
   readonly programId: string
+
+  @IsOptional()
+  @IsInt()
+  readonly maximumCapacity: number
+
+  @IsOptional()
+  @IsInt()
+  readonly maximumIrregularStudent: number
+
+  @IsOptional()
+  @IsInt()
+  readonly totalStudentCount: number
 }

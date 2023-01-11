@@ -24,9 +24,9 @@ controller
     body(CourseCreate),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const data = await db.course.create({ data: request.body })
-        await dbLog((request?.user as User)?.id, `[COURSE] CREATE ${data.id}`)
-        response.json(data)
+        const course = await db.course.create({ data: request.body })
+        await dbLog((request?.user as User)?.id, `[COURSE] CREATE ${course.id}`)
+        response.json(course)
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
@@ -97,12 +97,12 @@ controller
         const { id } = request.body
         delete request.body.id
         console.log(request.body)
-        const data = await db.course.update({
+        const course = await db.course.update({
           where: { id },
           data: request.body
         })
-        await dbLog((request?.user as User)?.id, `[COURSE] UPDATE ${data.id}`)
-        response.json(data)
+        await dbLog((request?.user as User)?.id, `[COURSE] UPDATE ${course.id}`)
+        response.json(course)
       } catch (error) {
         console.error(error)
         if (error instanceof Error)
@@ -119,11 +119,11 @@ controller
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const { id } = request.body
-        const data = await db.course.delete({
+        const course = await db.course.delete({
           where: { id }
         })
-        await dbLog((request?.user as User)?.id, `[COURSE] DELETE ${data.id}`)
-        response.json(data)
+        await dbLog((request?.user as User)?.id, `[COURSE] DELETE ${course.id}`)
+        response.json(course)
       } catch (error) {
         console.error(error)
         if (error instanceof Error)

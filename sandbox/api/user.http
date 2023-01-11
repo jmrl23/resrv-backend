@@ -6,7 +6,7 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "role": ["ADMIN", "REGISTRY"],
+  "role": ["ADMIN", "REGISTRY", "STUDENT"],
   "skip": 0,
   "take": 10,
   "keywords": ["jomariel", "gaitera", "test"]
@@ -18,7 +18,7 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "id": "3e54fb89-b037-4ffd-a899-5e7a1fe160c1"
+  "id": "4ded99e8-ee3a-4470-ad17-1b073c03eee7"
 }
 
 ### /update
@@ -27,9 +27,16 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "id": "3e54fb89-b037-4ffd-a899-5e7a1fe160c1",
+  "id": "553003d5-060c-445e-b35f-85d66abd6bb5",
   "enabled": true,
   "UserLevel": {
-    "role": "ADMIN"
+    "role": "STUDENT"
+  },
+  "StudentInformation": {
+    "studentType": "REGULAR",
+    "gender": "MALE",
+    "address": "lorem upsum donor amet",
+    "programId": "7fe97ce1-6979-4acf-b614-58e9807817da",
+    "classSectionId": "3189f4f3-a160-4752-89b0-71e2cb2e9d7a"
   }
 }

@@ -44,6 +44,10 @@ class StudentInformation {
   @IsOptional()
   @IsUUID()
   readonly programId: string
+
+  @IsOptional()
+  @IsUUID()
+  readonly classSectionId: string
 }
 
 export class UserUpdate {

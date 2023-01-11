@@ -1,0 +1,38 @@
+@authorization = keyboard_cat
+
+### /create
+POST http://localhost:3001/reservation/create HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "courseScheduleIds": ["b901efd3-d485-445b-b1c5-3e0dbbe50847", "a48daa9d-4f41-4948-a54f-15a90e01745b"]
+}
+
+### /list
+POST http://localhost:3001/reservation/list HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "studentInformationId": "804bad5c-4e95-4d2b-9fea-76a7636a535b"
+}
+
+### /get
+POST http://localhost:3001/reservation/get HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "id": "8643bc97-b4eb-4256-a4e8-19b3fc20b278"
+}
+
+### /update
+POST http://localhost:3001/reservation/update HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "id": "8643bc97-b4eb-4256-a4e8-19b3fc20b278",
+  "fileId": "804bad5c-4e95-4d2b-9fea-76a7636a535b"
+}

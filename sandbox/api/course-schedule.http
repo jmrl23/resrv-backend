@@ -6,8 +6,8 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "courseId": "7f0dab83-d03c-4ed3-831e-0a00f35c4572",
-  "classSectionId": "926e8fba-a7c0-4060-bff0-cec708cada43"
+  "courseId": "208ebabe-ff03-4d69-ae30-5139464c06ac",
+  "classSectionId": "3189f4f3-a160-4752-89b0-71e2cb2e9d7a"
 }
 
 ### /list
@@ -16,9 +16,7 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "courseId": "7f0dab83-d03c-4ed3-831e-0a00f35c4572",
-  "from": "00:00",
-  "to": "18:00"
+  "courseId": "7f0dab83-d03c-4ed3-831e-0a00f35c4572"
 }
 
 ### /get
@@ -27,7 +25,7 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "id": "e262093d-830c-4d06-9d25-2c7a7b6fd41e"
+  "id": "b901efd3-d485-445b-b1c5-3e0dbbe50847"
 }
 
 ### /update
@@ -36,8 +34,9 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "id": "e262093d-830c-4d06-9d25-2c7a7b6fd41e",
+  "id": "b901efd3-d485-445b-b1c5-3e0dbbe50847",
   "day": "MONDAY",
+  "from": "16:00",
   "to": "18:00"
 }
 

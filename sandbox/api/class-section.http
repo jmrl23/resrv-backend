@@ -6,7 +6,7 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "programId": "86aa6920-f231-4f69-b493-a82306c53931",
+  "programId": "7fe97ce1-6979-4acf-b614-58e9807817da",
   "name": "BSIT-3B",
   "yearLevel": 3
 }
@@ -28,7 +28,7 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "id": "05291898-43e9-4309-81db-abd0e6063ac9"
+  "id": "3189f4f3-a160-4752-89b0-71e2cb2e9d7a"
 }
 
 ### /update
@@ -37,8 +37,8 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "id": "63b83c41-be39-4600-bb19-0e9a018b72fe",
-  "name": "BSIT-3B (edited)"
+  "id": "e6dba55e-db19-4b12-8ccb-3f9b3685692b",
+  "name": "BSIT-3B (Updated)"
 }
 
 ### /delete
@@ -47,5 +47,5 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "id": "63b83c41-be39-4600-bb19-0e9a018b72fe"
+  "id": "6492db72-886d-429a-a3ec-d96b09342de1"
 }

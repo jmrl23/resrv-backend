@@ -6,7 +6,7 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "programId": "86aa6920-f231-4f69-b493-a82306c53931",
+  "programId": "2bb10b1a-bd11-44db-8762-2ffcdf52b172",
   "name": "Introduction To Web Technologies",
   "lecUnit": 4,
   "alias": "ITWT",
@@ -31,7 +31,7 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "id": "63b83c41-be39-4600-bb19-0e9a018b72fe"
+  "id": "208ebabe-ff03-4d69-ae30-5139464c06ac"
 }
 
 ### /update
@@ -40,8 +40,9 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "id": "63b83c41-be39-4600-bb19-0e9a018b72fe",
-  "name": "Introduction To Web Technologies (Updated)"
+  "id": "208ebabe-ff03-4d69-ae30-5139464c06ac",
+  "name": "Introduction To Web Technologies (Updated)",
+  "alias": "ITWT (Updated)"
 }
 
 ### /delete
@@ -50,5 +51,5 @@ Content-Type: application/json
 Authorization: Bearer {{authorization}}
 
 {
-  "id": "63b83c41-be39-4600-bb19-0e9a018b72fe"
+  "id": "861e2e4e-c614-4a33-a018-98be504b3a66"
 }

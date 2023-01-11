@@ -23,11 +23,10 @@ export async function requestUser(
           where: { id },
           include: {
             UserLevel: true,
-            StudentInformation: true,
-            Reservation: true
+            StudentInformation: true
           }
         }),
-      60_000
+      30_000
     )
     request.user = user
   } catch (_) {

@@ -18,7 +18,7 @@
     "db:push": "prisma db push"
   },
   "devDependencies": {
-    "@mermaid-js/mermaid-cli": "9.1.7",
+    "@mermaid-js/mermaid-cli": "^9.3.0",
     "@prisma/generator-helper": "4.0.0",
     "@types/cli-color": "^2.0.2",
     "@types/cors": "^2.8.12",
