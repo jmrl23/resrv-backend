@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsInt,
   IsOptional,
   IsString,
   IsUUID,
@@ -28,4 +29,8 @@ export class ProgramUpdate {
   @IsString()
   @Length(6, 20)
   readonly color: string
+
+  @IsOptional()
+  @IsInt({ message: 'Invalid year count' })
+  readonly yearCount: number
 }
