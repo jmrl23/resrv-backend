@@ -9,3 +9,12 @@ Authorization: Bearer {{authorization}}
   "email": "jagaitera@paterostechnologicalcollege.edu.ph",
   "role": "ADMIN"
 }
+
+### /list
+POST http://localhost:3001/user-level/list HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{authorization}}
+
+{
+  "role": "ADMIN"
+}

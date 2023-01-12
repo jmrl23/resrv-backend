@@ -1,5 +1,5 @@
 import { ReservationStatus } from '@prisma/client'
-import { IsOptional, IsUUID, IsEnum } from 'class-validator'
+import { IsOptional, IsUUID, IsEnum, IsInt } from 'class-validator'
 
 export class ReservationList {
   @IsOptional()
@@ -17,4 +17,12 @@ export class ReservationList {
   @IsOptional()
   @IsEnum(ReservationStatus)
   readonly status: ReservationStatus
+
+  @IsOptional()
+  @IsInt()
+  readonly skip: number
+
+  @IsOptional()
+  @IsInt()
+  readonly take: number
 }

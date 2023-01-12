@@ -5,6 +5,7 @@ import { tmpdir } from 'os'
 import { v4 as uuidv4 } from 'uuid'
 import {
   BadRequestError,
+  HttpError,
   InternalServerError,
   NotFoundError
 } from 'express-response-errors'
@@ -14,6 +15,7 @@ import { authorization, blockDisabled } from '../middlewares'
 import { File, Role } from '@prisma/client'
 import { extname } from 'path'
 import multer from 'multer'
+import { tryToPrismaError } from 'prisma-errors'
 
 const controller = Router()
 
@@ -61,8 +63,10 @@ controller
         )
         response.json(uploadedFile)
       } catch (error) {
+        console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
-          return next(new InternalServerError(error.message))
+          return next(new BadRequestError(tryToPrismaError(error).message))
       }
     }
   )
@@ -93,8 +97,10 @@ controller
         // con: prevents caching
         data.data.pipe(response)
       } catch (error) {
+        console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
-          return next(new NotFoundError('File not found'))
+          return next(new BadRequestError(tryToPrismaError(error).message))
       }
     }
   )

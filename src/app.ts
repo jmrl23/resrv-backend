@@ -14,10 +14,8 @@ import passport from 'passport'
 
 const app = express()
 
-// configurations
 app.set('trust proxy', TRUST_PROXY)
 
-// middlewares
 app.use(
   helmet,
   cors,
@@ -28,10 +26,8 @@ app.use(
   requestUser
 )
 
-// end-points
 app.use(rateLimiter({ max: 800 }), controller)
 
-// error handler
 app.use(notFound, responseErrorHandler)
 
 export { app }

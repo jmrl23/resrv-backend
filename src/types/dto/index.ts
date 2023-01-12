@@ -30,6 +30,7 @@ export * from './reservation.get.dto'
 export * from './reservation.update.dto'
 
 export * from './user-level.set.dto'
+export * from './user-level.list.dto'
 
 export * from './user.list.dto'
 export * from './user.get.dto'

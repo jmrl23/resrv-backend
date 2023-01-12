@@ -109,9 +109,10 @@ model UserLevel {
   id          String   @unique @default(uuid())
   dateCreated DateTime @default(now())
   lastUpdated DateTime @updatedAt
-  email       String
-  role        Role     @default(STUDENT)
-  User        User?
+
+  email String
+  role  Role   @default(STUDENT)
+  User  User?
 
   @@unique([email])
 }

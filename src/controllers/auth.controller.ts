@@ -27,33 +27,52 @@ passport.use(
     },
     async (_accessToken, _refreshToken, profile, next) => {
       const data: typeof profile._json = profile._json
+
+      if (!data?.email) return next(new BadRequestError('No email'))
       if (
-        (NODE_ENV !== 'development' &&
-          !data.email?.endsWith(`@${ORGANIZATION_EMAIL_DOMAIN}`)) ||
-        (NODE_ENV === 'development' &&
-          !BYPASS_ORGANIZATION_EMAIL_FILTER_ON_DEVELOPMENT &&
-          !data.email?.endsWith(`@${ORGANIZATION_EMAIL_DOMAIN}`))
+        NODE_ENV !== 'development' &&
+        !data.email.endsWith(`@${ORGANIZATION_EMAIL_DOMAIN}`)
       )
-        return next(null, undefined)
+        return next(new BadRequestError('Invalid email'))
+      if (
+        NODE_ENV === 'development' &&
+        !BYPASS_ORGANIZATION_EMAIL_FILTER_ON_DEVELOPMENT &&
+        !data.email.endsWith(`@${ORGANIZATION_EMAIL_DOMAIN}`)
+      )
+        return next(new BadRequestError('Invalid email'))
+
       try {
         const user = await db.user.findUnique({
-          where: { email: data.email },
-          include: { UserLevel: true }
+          where: {
+            email: data.email
+          },
+          include: {
+            UserLevel: true
+          }
         })
-        if (user && user.enabled && !user?.UserLevel) {
+
+        if (user && !user?.UserLevel) {
           await db.user.update({
-            where: { id: user.id },
+            where: {
+              id: user.id
+            },
             data: {
-              userLevelId: await db.userLevel
-                .create({ data: { email: data.email as string } })
-                .then(({ id }) => id)
+              UserLevel: {
+                connectOrCreate: {
+                  where: {
+                    email: data.email
+                  },
+                  create: {
+                    email: data.email
+                  }
+                }
+              }
             }
           })
         }
+
         if (user) return next(null, user.id)
-        const userLevel = await db.userLevel.findUnique({
-          where: { email: data.email }
-        })
+
         const newUser = await db.user.create({
           data: {
             email: data.email as string,
@@ -61,15 +80,21 @@ passport.use(
             familyName: data.family_name,
             displayName: data.name,
             picture: data.picture,
-            userLevelId: userLevel
-              ? userLevel.id
-              : await db.userLevel
-                  .create({ data: { email: data.email as string } })
-                  .then(({ id }) => id)
+            UserLevel: {
+              connectOrCreate: {
+                where: {
+                  email: data.email
+                },
+                create: {
+                  email: data.email
+                }
+              }
+            }
           }
         })
+
         next(null, newUser.id)
-      } catch (error: unknown) {
+      } catch (error) {
         if (error instanceof Error) next(new InternalServerError(error.message))
       }
     }

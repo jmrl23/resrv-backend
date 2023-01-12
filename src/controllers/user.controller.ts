@@ -116,13 +116,20 @@ controller
           typeof request.body?.UserLevel?.role !== 'undefined'
         )
           return next(new BadRequestError('Cannot perform the request'))
-        if (
-          request?.user &&
-          (((request?.user as User)?.id === request.body.id &&
-            typeof request.body?.enabled !== 'boolean') ||
-            (request?.user as User)?.UserLevel?.role !== 'ADMIN')
-        )
-          return next(new BadRequestError('Cannot perform the request'))
+        const user = request?.user as User
+        if (user) {
+          if (
+            user.id === request.body.id &&
+            (typeof request.body.enabled !== 'undefined' ||
+              typeof request.body.UserLevel !== 'undefined')
+          )
+            return next(new BadRequestError('Cannot perform the request'))
+          if (
+            user?.UserLevel?.role !== 'ADMIN' &&
+            typeof request.body.enabled !== 'undefined'
+          )
+            return next(new BadRequestError('Cannot perform the request'))
+        }
         const requestBody = { ...request.body }
         const UserLevel = { ...requestBody.UserLevel }
         const StudentInformation = { ...requestBody.StudentInformation }
@@ -131,6 +138,7 @@ controller
         const data = await db.user.update({
           where: { id: request.body.id },
           data: {
+            ...requestBody,
             UserLevel: {
               update: {
                 role: UserLevel.role
@@ -180,8 +188,7 @@ controller
                       }
                     }
                   }
-                : undefined,
-            ...requestBody
+                : undefined
           },
           include: {
             UserLevel: true,

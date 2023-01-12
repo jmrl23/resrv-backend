@@ -1,7 +1,7 @@
 import type { NextFunction, Response, Request } from 'express'
 import { Role } from '@prisma/client'
 import { Router } from 'express'
-import { BadRequestError } from 'express-response-errors'
+import { BadRequestError, HttpError } from 'express-response-errors'
 import { authorization, blockDisabled, body } from '../middlewares'
 import { db, dbLog } from '../services'
 import {
@@ -61,6 +61,7 @@ controller
         response.json(programs)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -81,6 +82,7 @@ controller
         response.json(program)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -104,6 +106,7 @@ controller
         response.json(data)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -125,6 +128,7 @@ controller
         response.json(data)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }

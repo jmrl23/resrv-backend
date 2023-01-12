@@ -9,7 +9,7 @@ import {
   CourseScheduleList,
   CourseScheduleUpdate
 } from '../types/dto'
-import { BadRequestError } from 'express-response-errors'
+import { BadRequestError, HttpError } from 'express-response-errors'
 import { db, dbLog } from '../services'
 import { User } from '../types'
 import { tryToPrismaError } from 'prisma-errors'
@@ -34,6 +34,7 @@ controller
         response.json(courseSchedule)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -70,6 +71,7 @@ controller
         response.json(courseSchedules)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -89,6 +91,7 @@ controller
         response.json(courseSchedule)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -119,6 +122,7 @@ controller
         response.json(courseSchedule)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -143,6 +147,7 @@ controller
         response.json(courseSchedule)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }

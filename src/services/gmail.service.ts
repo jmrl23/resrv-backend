@@ -5,6 +5,7 @@ import {
   GOOGLE_REFRESH_TOKEN,
   SMTP_TRANSPORT_URL
 } from '../configurations'
+import { InternalServerError } from 'express-response-errors'
 
 export const transportURL = new URL(SMTP_TRANSPORT_URL)
 
@@ -27,6 +28,6 @@ export const sendMail = async (options: SendMailOptions) => {
     const response = await transporter.sendMail(options)
     return response
   } catch (error) {
-    if (error instanceof Error) return error
+    if (error instanceof Error) return new InternalServerError(error.message)
   }
 }

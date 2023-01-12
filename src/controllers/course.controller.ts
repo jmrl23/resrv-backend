@@ -10,7 +10,7 @@ import {
 import { Role } from '@prisma/client'
 import { authorization, blockDisabled, body } from '../middlewares'
 import { db, dbLog } from '../services'
-import { BadRequestError } from 'express-response-errors'
+import { BadRequestError, HttpError } from 'express-response-errors'
 import { User } from '../types'
 import { tryToPrismaError } from 'prisma-errors'
 
@@ -29,6 +29,7 @@ controller
         response.json(course)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -61,6 +62,7 @@ controller
         response.json(courses)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -81,6 +83,7 @@ controller
         response.json(course)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -105,6 +108,7 @@ controller
         response.json(course)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -126,6 +130,7 @@ controller
         response.json(course)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }

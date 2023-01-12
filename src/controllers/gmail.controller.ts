@@ -1,11 +1,12 @@
 import type { NextFunction, Response, Request } from 'express'
 import { Router } from 'express'
 import { dbLog, sendMail } from '../services'
-import { InternalServerError } from 'express-response-errors'
+import { BadRequestError, HttpError } from 'express-response-errors'
 import { Role } from '@prisma/client'
 import { authorization, blockDisabled, body } from '../middlewares'
 import { GmailSend } from '../types/dto'
 import { User } from '../types'
+import { tryToPrismaError } from 'prisma-errors'
 
 const controller = Router()
 
@@ -25,8 +26,10 @@ controller.post(
       )
       response.json(data)
     } catch (error) {
+      console.error(error)
+      if (error instanceof HttpError) return next(error)
       if (error instanceof Error)
-        return next(new InternalServerError(error.message))
+        return next(new BadRequestError(tryToPrismaError(error).message))
     }
   }
 )

@@ -2,6 +2,7 @@ import { GOOGLE_DRIVE_FOLDER_ID, googleOAuth2Client } from '../configurations'
 import { google } from 'googleapis'
 import { lookup } from 'mime-types'
 import { createReadStream, existsSync } from 'fs'
+import { InternalServerError } from 'express-response-errors'
 
 export const drive = google.drive({
   version: 'v3',
@@ -29,7 +30,7 @@ export const driveUpload = async (file: string) => {
       throw new Error('An error occurs')
     const { data } = response
     return data
-  } catch (error: unknown) {
-    if (error instanceof Error) return error
+  } catch (error) {
+    if (error instanceof Error) return new InternalServerError(error.message)
   }
 }

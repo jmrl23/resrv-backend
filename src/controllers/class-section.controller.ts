@@ -11,6 +11,7 @@ import {
 import {
   BadRequestError,
   ForbiddenError,
+  HttpError,
   NotFoundError
 } from 'express-response-errors'
 import { db, dbLog } from '../services'
@@ -47,6 +48,7 @@ controller
         response.json(classSection)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -78,6 +80,7 @@ controller
         response.json(classSections)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -97,6 +100,7 @@ controller
         response.json(classSection)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -123,6 +127,7 @@ controller
         response.json(data)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -146,6 +151,7 @@ controller
         response.json(data)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }

@@ -8,7 +8,7 @@ import {
   ReservationUpdate
 } from '../types/dto'
 import { Role } from '@prisma/client'
-import { BadRequestError } from 'express-response-errors'
+import { BadRequestError, HttpError } from 'express-response-errors'
 import { tryToPrismaError } from 'prisma-errors'
 import { db, dbLog } from '../services'
 import { User } from '../types'
@@ -54,6 +54,7 @@ controller
         response.json(reservation)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -67,8 +68,13 @@ controller
     body(ReservationList),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
+        const { skip, take } = request.body
+        delete request.body.skip
+        delete request.body.take
         const reservations = await db.reservation.findMany({
           where: request.body,
+          skip,
+          take,
           include: {
             File: true,
             CourseSchedule: true
@@ -80,6 +86,7 @@ controller
         response.json(reservations)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -103,6 +110,7 @@ controller
         response.json(reservation)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
@@ -133,6 +141,7 @@ controller
         response.json(reservation)
       } catch (error) {
         console.error(error)
+        if (error instanceof HttpError) return next(error)
         if (error instanceof Error)
           return next(new BadRequestError(tryToPrismaError(error).message))
       }
