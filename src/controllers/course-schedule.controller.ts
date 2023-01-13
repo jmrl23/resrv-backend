@@ -50,8 +50,6 @@ controller
       try {
         const { from, to, day, courseId, classSectionId, skip, take } =
           request.body
-
-        console.log(from, to)
         const courseSchedules = await db.courseSchedule.findMany({
           where: {
             courseId,

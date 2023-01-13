@@ -99,7 +99,6 @@ controller
       try {
         const { id } = request.body
         delete request.body.id
-        console.log(request.body)
         const course = await db.course.update({
           where: { id },
           data: request.body
