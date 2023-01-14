@@ -48,9 +48,13 @@ controller
     body(UserLevelList),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const { skip, take } = request.body
+        const { skip, take, role } = request.body
         const userLevels = await db.userLevel.findMany({
-          where: request.body,
+          where: {
+            role: {
+              in: role
+            }
+          },
           skip,
           take,
           include: {

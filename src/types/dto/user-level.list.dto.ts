@@ -2,8 +2,8 @@ import { Role } from '@prisma/client'
 import { IsEnum, IsInt, IsOptional } from 'class-validator'
 
 export class UserLevelList {
-  @IsEnum(Role)
-  readonly role: string
+  @IsEnum(Role, { each: true })
+  readonly role: Role[]
 
   @IsOptional()
   @IsInt()
