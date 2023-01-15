@@ -18,7 +18,10 @@ controller
     body(UserLevelSet),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
+        const user = request.user as User
         const { email } = request.body
+        if (user?.email === email)
+          throw new BadRequestError('Cannot perform the request')
         const userLevel = await db.userLevel.upsert({
           where: { email },
           update: request.body,
@@ -81,8 +84,12 @@ controller
     body(UserLevelDelete),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
+        const user = request.user as User
+        const { email } = request.body
+        if (user?.email === email)
+          throw new BadRequestError('Cannot perform the request')
         const userLevel = await db.userLevel.delete({
-          where: request.body
+          where: { email }
         })
         response.json(userLevel)
       } catch (error) {

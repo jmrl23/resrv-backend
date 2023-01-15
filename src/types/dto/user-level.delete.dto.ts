@@ -1,6 +1,6 @@
-import { IsUUID } from 'class-validator'
+import { IsEmail } from 'class-validator'
 
 export class UserLevelDelete {
-  @IsUUID()
-  readonly id: string
+  @IsEmail()
+  readonly email: string
 }
