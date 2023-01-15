@@ -1,7 +1,7 @@
 import type { NextFunction, Response, Request } from 'express'
 import { Role } from '@prisma/client'
 import { Router } from 'express'
-import { UserLevelList, UserLevelSet } from '../types/dto'
+import { UserLevelDelete, UserLevelList, UserLevelSet } from '../types/dto'
 import { authorization, blockDisabled, body } from '../middlewares'
 import { BadRequestError, HttpError } from 'express-response-errors'
 import { tryToPrismaError } from 'prisma-errors'
@@ -65,6 +65,26 @@ controller
           }
         })
         response.json(userLevels)
+      } catch (error) {
+        console.error(error)
+        if (error instanceof HttpError) return next(error)
+        if (error instanceof Error)
+          return next(new BadRequestError(tryToPrismaError(error).message))
+      }
+    }
+  )
+
+  .post(
+    '/delete',
+    authorization(Role.ADMIN),
+    blockDisabled,
+    body(UserLevelDelete),
+    async function (request: Request, response: Response, next: NextFunction) {
+      try {
+        const userLevel = await db.userLevel.delete({
+          where: request.body
+        })
+        response.json(userLevel)
       } catch (error) {
         console.error(error)
         if (error instanceof HttpError) return next(error)
