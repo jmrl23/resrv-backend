@@ -125,7 +125,9 @@ controller
           )
             return next(new BadRequestError('Cannot perform the request'))
           if (
-            user?.UserLevel?.role !== 'ADMIN' &&
+            !([Role.ADMIN, Role.REGISTRY] as (string | undefined)[]).includes(
+              user.UserLevel?.role
+            ) &&
             typeof request.body.enabled !== 'undefined'
           )
             return next(new BadRequestError('Cannot perform the request'))
