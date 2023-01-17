@@ -23,7 +23,7 @@ export class CourseUpdate {
 
   @IsOptional()
   @IsString()
-  @Length(3, 20)
+  @Length(3, 30)
   readonly alias: string
 
   @IsOptional()

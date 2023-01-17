@@ -43,7 +43,7 @@ controller
     body(CourseList),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const { take, skip, term, keywords, enabled } = request.body
+        const { take, skip, term, programId, keywords, enabled } = request.body
         const courses = await db.course.findMany({
           where: {
             enabled,
@@ -53,6 +53,7 @@ controller
             alias: {
               search: keywords?.join(' ')
             },
+            programId,
             term
           },
           skip,

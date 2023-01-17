@@ -6,7 +6,7 @@ export class ProgramCreate {
   readonly name: string
 
   @IsString()
-  @Length(3, 10)
+  @Length(3, 30)
   readonly alias: string
 
   @IsString()
