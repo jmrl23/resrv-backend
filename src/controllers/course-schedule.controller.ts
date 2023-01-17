@@ -24,8 +24,20 @@ controller
     body(CourseScheduleCreate),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
+        const { from, to, day, courseId, classSectionId } = request.body
         const courseSchedule = await db.courseSchedule.create({
-          data: request.body
+          data: {
+            from: from ? new Date('0 ' + from) : undefined,
+            to: from ? new Date('0 ' + to) : undefined,
+            day,
+            courseId,
+            classSectionId
+          },
+          include: {
+            ClassSection: true,
+            Course: true,
+            Reservations: true
+          }
         })
         await dbLog(
           (request?.user as User)?.id,
@@ -64,6 +76,11 @@ controller
           take,
           orderBy: {
             lastUpdated: 'desc'
+          },
+          include: {
+            ClassSection: true,
+            Course: true,
+            Reservations: true
           }
         })
         response.json(courseSchedules)
@@ -84,7 +101,12 @@ controller
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const courseSchedule = await db.courseSchedule.findUnique({
-          where: request.body
+          where: request.body,
+          include: {
+            ClassSection: true,
+            Course: true,
+            Reservations: true
+          }
         })
         response.json(courseSchedule)
       } catch (error) {
@@ -111,7 +133,12 @@ controller
           request.body.to = new Date('0 ' + request.body.to)
         const courseSchedule = await db.courseSchedule.update({
           where: { id },
-          data: request.body
+          data: request.body,
+          include: {
+            ClassSection: true,
+            Course: true,
+            Reservations: true
+          }
         })
         await dbLog(
           (request?.user as User)?.id,
@@ -136,7 +163,12 @@ controller
       try {
         const { id } = request.body
         const courseSchedule = await db.courseSchedule.delete({
-          where: { id }
+          where: { id },
+          include: {
+            ClassSection: true,
+            Course: true,
+            Reservations: true
+          }
         })
         await dbLog(
           (request?.user as User)?.id,

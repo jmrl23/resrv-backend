@@ -95,7 +95,11 @@ controller
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const classSection = await db.classSection.findUnique({
-          where: request.body
+          where: request.body,
+          include: {
+            CourseSchedule: true,
+            StudentInformation: true
+          }
         })
         response.json(classSection)
       } catch (error) {
@@ -118,7 +122,11 @@ controller
         delete request.body.id
         const data = await db.classSection.update({
           where: { id },
-          data: request.body
+          data: request.body,
+          include: {
+            CourseSchedule: true,
+            StudentInformation: true
+          }
         })
         await dbLog(
           (request?.user as User)?.id,
@@ -142,7 +150,11 @@ controller
     async function (request: Request, response: Response, next: NextFunction) {
       try {
         const data = await db.classSection.delete({
-          where: request.body
+          where: request.body,
+          include: {
+            CourseSchedule: true,
+            StudentInformation: true
+          }
         })
         await dbLog(
           (request?.user as User)?.id,
