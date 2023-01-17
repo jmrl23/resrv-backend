@@ -1,5 +1,12 @@
 import { Term } from '@prisma/client'
-import { IsBoolean, IsEnum, IsInt, IsOptional, IsString } from 'class-validator'
+import {
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  IsUUID
+} from 'class-validator'
 
 export class CourseList {
   @IsOptional()
@@ -21,4 +28,8 @@ export class CourseList {
   @IsOptional()
   @IsEnum(Term)
   readonly term: Term
+
+  @IsOptional()
+  @IsUUID()
+  readonly programId: string
 }

@@ -56,7 +56,12 @@ controller
           },
           skip,
           take,
-          orderBy: { lastUpdated: 'desc' }
+          orderBy: { lastUpdated: 'desc' },
+          include: {
+            Course: true,
+            ClassSection: true,
+            StudentInformation: true
+          }
         })
         response.json(programs)
       } catch (error) {
@@ -77,7 +82,12 @@ controller
       try {
         const { id } = request.body
         const program = await db.program.findUnique({
-          where: { id }
+          where: { id },
+          include: {
+            Course: true,
+            ClassSection: true,
+            StudentInformation: true
+          }
         })
         response.json(program)
       } catch (error) {
@@ -100,7 +110,12 @@ controller
         delete request.body.id
         const data = await db.program.update({
           where: { id },
-          data: request.body
+          data: request.body,
+          include: {
+            Course: true,
+            ClassSection: true,
+            StudentInformation: true
+          }
         })
         await dbLog((request?.user as User)?.id, `[PROGRAM] UPDATE ${data.id}`)
         response.json(data)
@@ -122,7 +137,12 @@ controller
       try {
         const { id } = request.body
         const data = await db.program.delete({
-          where: { id }
+          where: { id },
+          include: {
+            Course: true,
+            ClassSection: true,
+            StudentInformation: true
+          }
         })
         await dbLog((request?.user as User)?.id, `[PROGRAM] DELETE ${data.id}`)
         response.json(data)
