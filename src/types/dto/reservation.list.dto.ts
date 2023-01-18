@@ -4,10 +4,6 @@ import { IsOptional, IsUUID, IsEnum, IsInt } from 'class-validator'
 export class ReservationList {
   @IsOptional()
   @IsUUID()
-  readonly id: string
-
-  @IsOptional()
-  @IsUUID()
   readonly studentInformationId: string
 
   @IsOptional()

@@ -10,11 +10,11 @@ import {
 export class CourseScheduleList {
   @IsOptional()
   @IsOptional()
-  readonly CourseId: string
+  readonly courseId: string
 
   @IsOptional()
   @IsUUID()
-  readonly ClassSectionId: string
+  readonly classSectionId: string
 
   @IsOptional()
   @IsEnum(Day)
