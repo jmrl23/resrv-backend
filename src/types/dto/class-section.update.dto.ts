@@ -1,4 +1,11 @@
-import { IsInt, IsOptional, IsUUID, MinLength } from 'class-validator'
+import {
+  IsInt,
+  IsOptional,
+  IsPositive,
+  IsUUID,
+  Min,
+  MinLength
+} from 'class-validator'
 
 export class ClassSectionUpdate {
   @IsUUID()
@@ -9,14 +16,19 @@ export class ClassSectionUpdate {
   readonly name: string
 
   @IsOptional()
-  @IsInt()
+  @IsPositive({ message: 'Invalid maximum capacity' })
+  @IsInt({ message: 'Invalid maximum capacity' })
+  @Min(1, { message: 'Invalid maximum capacity' })
   readonly maximumCapacity: number
 
   @IsOptional()
-  @IsInt()
+  @IsPositive({ message: 'Invalid maximum irregular students' })
+  @IsInt({ message: 'Invalid maximum irregular students' })
+  @Min(1, { message: 'Invalid maximum irregular students' })
   readonly maximumIrregularStudent: number
 
   @IsOptional()
   @IsInt()
+  @IsPositive({ message: 'Invalid total student count' })
   readonly totalStudentCount: number
 }

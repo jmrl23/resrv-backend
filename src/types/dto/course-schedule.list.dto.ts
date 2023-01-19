@@ -17,6 +17,10 @@ export class CourseScheduleList {
   readonly classSectionId: string
 
   @IsOptional()
+  @IsUUID()
+  readonly programId: string
+
+  @IsOptional()
   @IsEnum(Day)
   readonly day: Day
 

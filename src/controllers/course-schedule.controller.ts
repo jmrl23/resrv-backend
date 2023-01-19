@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import { Router } from 'express'
 import type { Request, Response, NextFunction } from 'express'
 import { authorization, blockDisabled, body } from '../middlewares'
@@ -60,13 +61,26 @@ controller
     body(CourseScheduleList),
     async function (request: Request, response: Response, next: NextFunction) {
       try {
-        const { from, to, day, courseId, classSectionId, skip, take } =
-          request.body
+        const {
+          from,
+          to,
+          day,
+          courseId,
+          programId,
+          classSectionId,
+          skip,
+          take
+        } = request.body
         const courseSchedules = await db.courseSchedule.findMany({
           where: {
             courseId,
             classSectionId,
             day,
+            Course: programId
+              ? {
+                  programId
+                }
+              : undefined,
             AND: {
               from: from ? { gte: new Date('0 ' + from) } : undefined,
               to: to ? { lte: new Date('0 ' + to) } : undefined

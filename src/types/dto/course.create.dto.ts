@@ -1,5 +1,13 @@
 import { Term } from '@prisma/client'
-import { IsEnum, IsInt, IsString, IsUUID, Length } from 'class-validator'
+import {
+  IsEnum,
+  IsInt,
+  IsPositive,
+  IsString,
+  IsUUID,
+  Length,
+  Min
+} from 'class-validator'
 
 export class CourseCreate {
   @IsString()
@@ -14,8 +22,10 @@ export class CourseCreate {
   readonly programId: string
 
   @IsEnum(Term)
-  readonly term: string
+  readonly term: Term
 
   @IsInt()
+  @IsPositive({ message: 'Invalid lec. unit' })
+  @Min(1, { message: 'Invalid lec. Unit' })
   readonly lecUnit: number
 }

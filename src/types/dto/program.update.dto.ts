@@ -2,9 +2,11 @@ import {
   IsBoolean,
   IsInt,
   IsOptional,
+  IsPositive,
   IsString,
   IsUUID,
-  Length
+  Length,
+  Min
 } from 'class-validator'
 
 export class ProgramUpdate {
@@ -32,5 +34,7 @@ export class ProgramUpdate {
 
   @IsOptional()
   @IsInt({ message: 'Invalid year count' })
+  @IsPositive({ message: 'Invalid year count' })
+  @Min(1, { message: 'Invalid year count' })
   readonly yearCount: number
 }

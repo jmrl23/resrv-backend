@@ -28,5 +28,5 @@ export class CourseUpdate {
 
   @IsOptional()
   @IsEnum(Term)
-  readonly term: string
+  readonly term: Term
 }
