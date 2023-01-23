@@ -1,6 +1,5 @@
 node_modules/
 
-build/
 sandbox/DATABASE_ERD.svg
 
 .env*local
